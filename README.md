@@ -14,7 +14,7 @@ npm install electron-state-sync
 
 ## Features
 
-- 📦 **Lightweight**: Main process and renderer dependencies can be externalized
+- 📦 **Lightweight**: Main 6.3KB, renderer 1.5-2.2KB
 - 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
 - 🔒 **Write Control**: Support for read-only and writable modes
 - ✅ **Validation**: Main process validates renderer writes with standard error codes
