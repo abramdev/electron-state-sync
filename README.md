@@ -20,19 +20,6 @@ npm install electron-state-sync
 - ✅ **Validation**: Main process validates renderer writes with standard error codes
 - 🔌 **Custom Bridge**: Support custom **SyncStateBridge** implementation
 
-## Requirements
-
-- **Electron**: ≥ 18.0.0 (recommended ≥ 32.0.0)
-- **Node.js**: ≥ 16.9.0
-- **TypeScript**: ≥ 5.0.0 (if using TypeScript)
-
-**Framework Integration** (choose as needed):
-
-- **React**: ≥ 18.0.0
-- **Vue**: ≥ 3.0.0
-- **Svelte**: ≥ 3.0.0
-- **SolidJS**: ≥ 1.0.0
-
 ## Usage
 
 ### Main Process
@@ -411,6 +398,19 @@ const profile = useSyncState(
 ```
 
 **Note**: React, Svelte, and SolidJS integrations do not support deep watch. For object state changes in those frameworks, create a new object reference to trigger updates.
+
+## Requirements
+
+- **Electron**: ≥ 18.0.0 (recommended ≥ 32.0.0)
+- **Node.js**: ≥ 16.9.0
+- **TypeScript**: ≥ 5.0.0 (if using TypeScript)
+
+**Framework Integration** (choose as needed):
+
+- **React**: ≥ 18.0.0
+- **Vue**: ≥ 3.0.0
+- **Svelte**: ≥ 3.0.0
+- **SolidJS**: ≥ 1.0.0
 
 ## License
 

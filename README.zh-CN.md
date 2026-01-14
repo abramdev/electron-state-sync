@@ -20,19 +20,6 @@ npm install electron-state-sync
 - ✅ **写入校验**：主进程校验渲染端写入并返回标准错误码
 - 🔌 **自定义桥接**：支持自定义 **SyncStateBridge** 对接
 
-## 系统要求
-
-- **Electron**: ≥ 18.0.0（推荐 ≥ 32.0.0）
-- **Node.js**: ≥ 16.9.0
-- **TypeScript**: ≥ 5.0.0（如果使用 TypeScript）
-
-**框架集成**（按需选择）：
-
-- **React**: ≥ 18.0.0
-- **Vue**: ≥ 3.0.0
-- **Svelte**: ≥ 3.0.0
-- **SolidJS**: ≥ 1.0.0
-
 ## 使用方法
 
 ### 主进程
@@ -413,6 +400,19 @@ const profile = useSyncState(
 ```
 
 **注意**：React、Svelte 和 SolidJS 集成不支持深度监听。在这些框架中，如需监听对象内部变化，请创建新的对象引用以触发更新。
+
+## 系统要求
+
+- **Electron**: ≥ 18.0.0（推荐 ≥ 32.0.0）
+- **Node.js**: ≥ 16.9.0
+- **TypeScript**: ≥ 5.0.0（如果使用 TypeScript）
+
+**框架集成**（按需选择）：
+
+- **React**: ≥ 18.0.0
+- **Vue**: ≥ 3.0.0
+- **Svelte**: ≥ 3.0.0
+- **SolidJS**: ≥ 1.0.0
 
 ## License
 
