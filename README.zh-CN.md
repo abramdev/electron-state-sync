@@ -40,127 +40,78 @@ npm install electron-state-sync
 #### 快速配置
 
 ```ts
-import { app, BrowserWindow } from "electron";
-import { join } from "node:path";
-
+// main.ts
 import { state } from "electron-state-sync/main";
 
-const createWindow = (): BrowserWindow =>
-  new BrowserWindow({
-    webPreferences: {
-      contextIsolation: true,
-      preload: join(__dirname, "preload.js"),
-    },
-  });
-
-app.whenReady().then(() => {
-  const counter = state({
-    name: "counter",
-    initialValue: 0,
-  });
-
-  // 主进程操作（可选）
-  counter.set(10);           // 修改值（自动广播）
-  const value = counter.get();  // 读取值
-
-  createWindow();
+const counter = state({
+  name: "counter",
+  initialValue: 0,
 });
+
+counter.set(10);
+const value = counter.get();
 ```
 
 #### 生产级配置
 
 ```ts
-import { app, BrowserWindow } from "electron";
-import { join } from "node:path";
-
+// main.ts
 import { state } from "electron-state-sync/main";
 
-const createWindow = (): BrowserWindow =>
-  new BrowserWindow({
-    webPreferences: {
-      contextIsolation: true,
-      preload: join(__dirname, "preload.js"),
-    },
-  });
-
-app.whenReady().then(() => {
-  const counter = state({
-    baseChannel: "state",
-    name: "counter",
-    initialValue: 0,
-    // 是否允许渲染端写入（默认：true）
-    allowRendererSet: true,
-    // 渲染端写入值的校验或转换
-    resolveRendererValue: (value) => {
-      if (typeof value !== "number") {
-        throw new Error("counter 只接受 number");
-      }
-      return value;
-    },
-  });
-
-  // 主进程操作
-  counter.set(100);
-  const current = counter.get();
-
-  createWindow();
+const counter = state({
+  baseChannel: "state",
+  name: "counter",
+  initialValue: 0,
+  allowRendererSet: true,
+  resolveRendererValue: (value) => {
+    if (typeof value !== "number") {
+      throw new Error("counter 只接受 number");
+    }
+    return value;
+  },
 });
+
+counter.set(100);
+const current = counter.get();
 ```
 
 #### 多状态应用
 
 ```ts
-import { app, BrowserWindow } from "electron";
-import { join } from "node:path";
-
+// main.ts
 import { initSyncStateMain, state } from "electron-state-sync/main";
 
-const createWindow = (): BrowserWindow =>
-  new BrowserWindow({
-    webPreferences: {
-      contextIsolation: true,
-      preload: join(__dirname, "preload.js"),
-    },
-  });
-
-app.whenReady().then(() => {
-  // 初始化全局配置
-  initSyncStateMain({
-    baseChannel: "myapp",      // 全局 baseChannel（默认：state）
-    allowRendererSet: false,   // 全局只读模式（默认：true）
-  });
-
-  // 注册多个状态，自动使用全局配置
-  const counter = state({
-    name: "counter",
-    initialValue: 0,
-  });
-
-  const user = state({
-    name: "user",
-    initialValue: { name: "" },
-  });
-
-  // 覆盖全局配置
-  const theme = state({
-    baseChannel: "settings",  // 覆盖全局配置
-    name: "theme",
-    initialValue: "light",
-    allowRendererSet: true,    // 这个状态可写
-  });
-
-  // 主进程操作
-  counter.set(10);
-  user.set({ name: "Alice" });
-  theme.set("dark");
-
-  createWindow();
+initSyncStateMain({
+  baseChannel: "myapp",
+  allowRendererSet: false,
 });
+
+const counter = state({
+  name: "counter",
+  initialValue: 0,
+});
+
+const user = state({
+  name: "user",
+  initialValue: { name: "" },
+});
+
+const theme = state({
+  baseChannel: "settings",
+  name: "theme",
+  initialValue: "light",
+  allowRendererSet: true,
+});
+
+counter.set(10);
+user.set({ name: "Alice" });
+theme.set("dark");
 ```
 
 ### Preload
 
 ```ts
+// preload.ts
 import { exposeSyncState } from "electron-state-sync/preload";
 
 exposeSyncState();
@@ -171,6 +122,7 @@ exposeSyncState();
 浏览器端会暴露 **window.syncState**，包含 **get** / **set** / **subscribe**：
 
 ```ts
+// renderer process
 const bridge = window.syncState;
 if (!bridge) {
   throw new Error("syncState 未注入");
@@ -205,13 +157,14 @@ const unsubscribe = bridge.subscribe<number>(
 可以实现 **SyncStateBridge** 自定义对接，再注入到 Hook：
 
 ```ts
+// renderer process
 import type { SyncStateBridge } from "electron-state-sync/renderer";
 
 const customBridge: SyncStateBridge = {
   get: async (options) => window.syncState!.get(options),
   set: async (options, value) => window.syncState!.set(options, value),
   subscribe: (options, listener) => window.syncState!.subscribe(options, listener),
-}; // 自定义桥接实现
+};
 ```
 
 ### Vue 端

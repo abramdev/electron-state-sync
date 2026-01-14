@@ -40,127 +40,78 @@ npm install electron-state-sync
 #### Quick Setup
 
 ```ts
-import { app, BrowserWindow } from "electron";
-import { join } from "node:path";
-
+// main.ts
 import { state } from "electron-state-sync/main";
 
-const createWindow = (): BrowserWindow =>
-  new BrowserWindow({
-    webPreferences: {
-      contextIsolation: true,
-      preload: join(__dirname, "preload.js"),
-    },
-  });
-
-app.whenReady().then(() => {
-  const counter = state({
-    name: "counter",
-    initialValue: 0,
-  });
-
-  // Main process operations (optional)
-  counter.set(10);           // Set value (auto broadcast)
-  const value = counter.get();  // Get value
-
-  createWindow();
+const counter = state({
+  name: "counter",
+  initialValue: 0,
 });
+
+counter.set(10);
+const value = counter.get();
 ```
 
 #### Production Ready
 
 ```ts
-import { app, BrowserWindow } from "electron";
-import { join } from "node:path";
-
+// main.ts
 import { state } from "electron-state-sync/main";
 
-const createWindow = (): BrowserWindow =>
-  new BrowserWindow({
-    webPreferences: {
-      contextIsolation: true,
-      preload: join(__dirname, "preload.js"),
-    },
-  });
-
-app.whenReady().then(() => {
-  const counter = state({
-    baseChannel: "state",
-    name: "counter",
-    initialValue: 0,
-    // Allow renderer write (default: true)
-    allowRendererSet: true,
-    // Validate or transform renderer writes
-    resolveRendererValue: (value) => {
-      if (typeof value !== "number") {
-        throw new Error("counter only accepts number");
-      }
-      return value;
-    },
-  });
-
-  // Main process operations
-  counter.set(100);
-  const current = counter.get();
-
-  createWindow();
+const counter = state({
+  baseChannel: "state",
+  name: "counter",
+  initialValue: 0,
+  allowRendererSet: true,
+  resolveRendererValue: (value) => {
+    if (typeof value !== "number") {
+      throw new Error("counter only accepts number");
+    }
+    return value;
+  },
 });
+
+counter.set(100);
+const current = counter.get();
 ```
 
 #### Multi-State App
 
 ```ts
-import { app, BrowserWindow } from "electron";
-import { join } from "node:path";
-
+// main.ts
 import { initSyncStateMain, state } from "electron-state-sync/main";
 
-const createWindow = (): BrowserWindow =>
-  new BrowserWindow({
-    webPreferences: {
-      contextIsolation: true,
-      preload: join(__dirname, "preload.js"),
-    },
-  });
-
-app.whenReady().then(() => {
-  // Initialize global configuration
-  initSyncStateMain({
-    baseChannel: "myapp",      // Global baseChannel (default: state)
-    allowRendererSet: false,   // Global read-only mode (default: true)
-  });
-
-  // Register multiple states, automatically using global config
-  const counter = state({
-    name: "counter",
-    initialValue: 0,
-  });
-
-  const user = state({
-    name: "user",
-    initialValue: { name: "" },
-  });
-
-  // Override global config
-  const theme = state({
-    baseChannel: "settings",  // Override global config
-    name: "theme",
-    initialValue: "light",
-    allowRendererSet: true,    // This state is writable
-  });
-
-  // Main process operations
-  counter.set(10);
-  user.set({ name: "Alice" });
-  theme.set("dark");
-
-  createWindow();
+initSyncStateMain({
+  baseChannel: "myapp",
+  allowRendererSet: false,
 });
+
+const counter = state({
+  name: "counter",
+  initialValue: 0,
+});
+
+const user = state({
+  name: "user",
+  initialValue: { name: "" },
+});
+
+const theme = state({
+  baseChannel: "settings",
+  name: "theme",
+  initialValue: "light",
+  allowRendererSet: true,
+});
+
+counter.set(10);
+user.set({ name: "Alice" });
+theme.set("dark");
 ```
 
 ### Preload
 
 ```ts
+// preload.ts
 import { exposeSyncState } from "electron-state-sync/preload";
 
 exposeSyncState();
@@ -171,6 +122,7 @@ exposeSyncState();
 Browser exposes **window.syncState** with **get** / **set** / **subscribe**:
 
 ```ts
+// renderer process
 const bridge = window.syncState;
 if (!bridge) {
   throw new Error("syncState not injected");
@@ -205,22 +157,22 @@ const unsubscribe = bridge.subscribe<number>(
 You can implement **SyncStateBridge** for custom integration:
 
 ```ts
+// renderer process
 import type { SyncStateBridge } from "electron-state-sync/renderer";
 
 const customBridge: SyncStateBridge = {
   get: async (options) => window.syncState!.get(options),
   set: async (options, value) => window.syncState!.set(options, value),
   subscribe: (options, listener) => window.syncState!.subscribe(options, listener),
-}; // Custom bridge implementation
+};
 ```
 
 ### Vue
 
-**useSyncState** only depends on common interface, can be reused or custom bridge.
-
 #### Minimal Usage
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/vue";
 
 const counter = useSyncState(0, {
@@ -231,14 +183,13 @@ const counter = useSyncState(0, {
 #### Use Global Configuration
 
 ```ts
+// renderer process
 import { initSyncState, useSyncState } from "electron-state-sync/vue";
 
-// Set global config during app initialization
 initSyncState({
   baseChannel: "myapp",
 });
 
-// All hooks automatically use global config
 const counter = useSyncState(0, {
   name: "counter",
 });
@@ -247,7 +198,6 @@ const user = useSyncState({ name: "" }, {
   name: "user",
 });
 
-// Override global config
 const theme = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
@@ -257,6 +207,7 @@ const theme = useSyncState("light", {
 #### Custom Bridge
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/vue";
 
 const counter = useSyncState(0, {
@@ -271,6 +222,7 @@ const counter = useSyncState(0, {
 #### Minimal Usage
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/react";
 
 const [counter, setCounter] = useSyncState(0, {
@@ -281,14 +233,13 @@ const [counter, setCounter] = useSyncState(0, {
 #### Use Global Configuration
 
 ```ts
+// renderer process
 import { initSyncState, useSyncState } from "electron-state-sync/react";
 
-// Set global config during app initialization
 initSyncState({
   baseChannel: "myapp",
 });
 
-// All hooks automatically use global config
 const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
@@ -297,7 +248,6 @@ const [user, setUser] = useSyncState({ name: "" }, {
   name: "user",
 });
 
-// Override global config
 const [theme, setTheme] = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
@@ -307,6 +257,7 @@ const [theme, setTheme] = useSyncState("light", {
 #### Custom Bridge
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/react";
 
 const [counter, setCounter] = useSyncState(0, {
@@ -320,6 +271,7 @@ const [counter, setCounter] = useSyncState(0, {
 #### Minimal Usage
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/svelte";
 
 const counter = useSyncState(0, {
@@ -330,14 +282,13 @@ const counter = useSyncState(0, {
 #### Use Global Configuration
 
 ```ts
+// renderer process
 import { initSyncState, useSyncState } from "electron-state-sync/svelte";
 
-// Set global config during app initialization
 initSyncState({
   baseChannel: "myapp",
 });
 
-// All stores automatically use global config
 const counter = useSyncState(0, {
   name: "counter",
 });
@@ -346,7 +297,6 @@ const user = useSyncState({ name: "" }, {
   name: "user",
 });
 
-// Override global config
 const theme = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
@@ -356,6 +306,7 @@ const theme = useSyncState("light", {
 #### Custom Bridge
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/svelte";
 
 const counter = useSyncState(0, {
@@ -377,6 +328,7 @@ const counter = useSyncState(0, {
 #### Minimal Usage
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/solid";
 
 const [counter, setCounter] = useSyncState(0, {
@@ -387,14 +339,13 @@ const [counter, setCounter] = useSyncState(0, {
 #### Use Global Configuration
 
 ```ts
+// renderer process
 import { initSyncState, useSyncState } from "electron-state-sync/solid";
 
-// Set global config during app initialization
 initSyncState({
   baseChannel: "myapp",
 });
 
-// All hooks automatically use global config
 const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
@@ -403,7 +354,6 @@ const [user, setUser] = useSyncState({ name: "" }, {
   name: "user",
 });
 
-// Override global config
 const [theme, setTheme] = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
@@ -413,6 +363,7 @@ const [theme, setTheme] = useSyncState("light", {
 #### Custom Bridge
 
 ```ts
+// renderer process
 import { useSyncState } from "electron-state-sync/solid";
 
 const [counter, setCounter] = useSyncState(0, {
