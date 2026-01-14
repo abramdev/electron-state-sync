@@ -14,10 +14,10 @@ npm install electron-state-sync
 
 ## Features
 
+- 📦 **Lightweight**: Main process and renderer dependencies can be externalized
+- 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
 - 🔒 **Write Control**: Support for read-only and writable modes
 - ✅ **Validation**: Main process validates renderer writes with standard error codes
-- 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
-- 📦 **Lightweight**: Main process and renderer dependencies can be externalized
 - 🔌 **Custom Bridge**: Support custom **SyncStateBridge** implementation
 
 ## Requirements

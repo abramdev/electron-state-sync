@@ -14,10 +14,10 @@ npm install electron-state-sync
 
 ## 特性
 
+- 📦 **轻量构建**：主进程与渲染端依赖可外部化
+- 🧩 **多框架支持**：React / Vue / Svelte / Solid
 - 🔒 **写入控制**：支持只读与可写模式
 - ✅ **写入校验**：主进程校验渲染端写入并返回标准错误码
-- 🧩 **多框架支持**：React / Vue / Svelte / Solid
-- 📦 **轻量构建**：主进程与渲染端依赖可外部化
 - 🔌 **自定义桥接**：支持自定义 **SyncStateBridge** 对接
 
 ## 系统要求
