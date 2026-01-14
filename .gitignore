@@ -56,3 +56,9 @@ Thumbs.db
 *.temp
 tmp
 temp
+
+# Claude Code
+.claude/
+
+# Development documentation
+AGENTS.md
