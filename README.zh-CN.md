@@ -29,7 +29,6 @@ bun add electron-state-sync
 - 🧩 **多框架支持**：React / Vue / Svelte / Solid
 - 📦 **轻量构建**：主进程与渲染端依赖可外部化
 - 🔌 **自定义桥接**：支持自定义 **SyncStateBridge** 对接
-- 🎯 **实时推送**：支持 **subscribe** 实时更新
 
 ## 系统要求
 

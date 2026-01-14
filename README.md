@@ -29,7 +29,6 @@ bun add electron-state-sync
 - 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
 - 📦 **Lightweight**: Main process and renderer dependencies can be externalized
 - 🔌 **Custom Bridge**: Support custom **SyncStateBridge** implementation
-- 🎯 **Real-time**: Subscribe updates for instant sync
 
 ## Requirements
 
