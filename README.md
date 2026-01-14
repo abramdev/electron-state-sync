@@ -4,7 +4,7 @@
 
 🌐 [English](./README.md) | [中文](./README.zh-CN.md)
 
-Electron main/renderer process state synchronization library.
+A lightweight Electron state synchronization library that enables seamless data sharing between main and renderer processes. Supports React, Vue, Svelte, and SolidJS with automatic multi-window sync.
 
 ## Installation
 

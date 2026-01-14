@@ -4,7 +4,7 @@
 
 🌐 [English](./README.md) | [中文](./README.zh-CN.md)
 
-Electron 主/渲染进程状态同步库。
+一个轻量级的 Electron 状态同步库，实现主进程与渲染端之间的数据无缝共享。支持 React、Vue、Svelte 和 SolidJS，具备自动多窗口同步功能。
 
 ## 安装
 
