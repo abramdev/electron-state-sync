@@ -75,39 +75,6 @@ counter.set(100);
 const current = counter.get();
 ```
 
-#### Multi-State App
-
-```ts
-// main.ts
-import { initSyncStateMain, state } from "electron-state-sync/main";
-
-initSyncStateMain({
-  baseChannel: "myapp",
-  allowRendererSet: false,
-});
-
-const counter = state({
-  name: "counter",
-  initialValue: 0,
-});
-
-const user = state({
-  name: "user",
-  initialValue: { name: "" },
-});
-
-const theme = state({
-  baseChannel: "settings",
-  name: "theme",
-  initialValue: "light",
-  allowRendererSet: true,
-});
-
-counter.set(10);
-user.set({ name: "Alice" });
-theme.set("dark");
-```
-
 #### Multi-Window Sync
 
 All windows automatically receive updates when state changes:
