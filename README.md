@@ -9,17 +9,7 @@ Electron main/renderer process state synchronization library.
 ## Installation
 
 ```bash
-# npm
 npm install electron-state-sync
-
-# yarn
-yarn add electron-state-sync
-
-# pnpm
-pnpm add electron-state-sync
-
-# bun
-bun add electron-state-sync
 ```
 
 ## Features

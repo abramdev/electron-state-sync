@@ -9,17 +9,7 @@ Electron 主/渲染进程状态同步库。
 ## 安装
 
 ```bash
-# npm
 npm install electron-state-sync
-
-# yarn
-yarn add electron-state-sync
-
-# pnpm
-pnpm add electron-state-sync
-
-# bun
-bun add electron-state-sync
 ```
 
 ## 特性
