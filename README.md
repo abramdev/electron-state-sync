@@ -33,7 +33,7 @@ npm install electron-state-sync
 - **Svelte**: ≥ 3.0.0
 - **SolidJS**: ≥ 1.0.0
 
-## Electron Sync State
+## Usage
 
 ### Main Process
 
@@ -52,7 +52,7 @@ counter.set(10);
 const value = counter.get();
 ```
 
-#### Production Ready
+#### Advanced Setup
 
 ```ts
 // main.ts

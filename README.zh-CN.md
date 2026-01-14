@@ -33,7 +33,7 @@ npm install electron-state-sync
 - **Svelte**: ≥ 3.0.0
 - **SolidJS**: ≥ 1.0.0
 
-## Electron 同步状态
+## 使用方法
 
 ### 主进程
 
@@ -52,7 +52,7 @@ counter.set(10);
 const value = counter.get();
 ```
 
-#### 生产级配置
+#### 高级配置
 
 ```ts
 // main.ts
