@@ -27,12 +27,12 @@ bun add electron-state-sync
 - 🛡️ **主进程权威同步**：所有状态以主进程为准并广播更新
 - 🔒 **写入控制**：支持只读与可写模式
 - ✅ **写入校验**：主进程校验渲染端写入并返回标准错误码
-- 🔄 **首次同步标记**：渲染端提供 `isSynced` 判断首次同步完成
+- 🔄 **首次同步标记**：渲染端提供 **isSynced** 判断首次同步完成
 - 🧩 **多框架支持**：React / Vue / Svelte / Solid
 - 📦 **轻量构建**：主进程与渲染端依赖可外部化
-- 🔌 **自定义桥接**：支持自定义 `SyncStateBridge` 对接
-- 📡 **通道命名一致**：统一 `baseChannel:name` 规则
-- 🎯 **实时推送**：支持 `subscribe` 实时更新
+- 🔌 **自定义桥接**：支持自定义 **SyncStateBridge** 对接
+- 📡 **通道命名一致**：统一 **baseChannel:name** 规则
+- 🎯 **实时推送**：支持 **subscribe** 实时更新
 
 ## 系统要求
 
@@ -182,7 +182,7 @@ exposeSyncState();
 
 ### 通用接口
 
-浏览器端会暴露 `window.syncState`，包含 `get` / `set` / `subscribe`：
+浏览器端会暴露 **window.syncState**，包含 **get** / **set** / **subscribe**：
 
 ```ts
 const bridge = window.syncState;
@@ -216,7 +216,7 @@ const unsubscribe = bridge.subscribe<number>(
 
 ### 自定义桥接
 
-可以实现 `SyncStateBridge` 自定义对接，再注入到 Hook：
+可以实现 **SyncStateBridge** 自定义对接，再注入到 Hook：
 
 ```ts
 import type { SyncStateBridge } from "electron-state-sync/renderer";
@@ -230,7 +230,7 @@ const customBridge: SyncStateBridge = {
 
 ### Vue 端
 
-`useSyncState` 仅依赖通用接口，可以直接复用或自定义桥接实现。
+**useSyncState** 仅依赖通用接口，可以直接复用或自定义桥接实现。
 
 #### 最简化使用
 
@@ -435,30 +435,30 @@ const [counter, setCounter] = useSyncState(0, {
 });
 ```
 
-### 通道命名
+### IPC 通道命名
 
-通道格式为 `${baseChannel}:${name}:get|set|subscribe|unsubscribe|update`。
+通道格式为 **${baseChannel}:${name}:get|set|subscribe|unsubscribe|update**。
 
 ### 写入权限与校验
 
-- `allowRendererSet: false` 时渲染端写入会抛错，但仍可订阅更新。
-- `resolveRendererValue` 用于校验或转换渲染端写入值，抛错会拒绝写入。
+- **allowRendererSet: false** 时渲染端写入会抛错，但仍可订阅更新。
+- **resolveRendererValue** 用于校验或转换渲染端写入值，抛错会拒绝写入。
 - 主进程始终作为权威来源，所有变更都会广播给订阅者。
 
 ### 初始值同步
 
-- 渲染端 `initialValue` 仅用于首屏占位，最终以主进程值为准。
-- 渲染端会先订阅主进程更新，再调用 `get` 拉取当前值，可能会触发一次覆盖更新。
+- 渲染端 **initialValue** 仅用于首屏占位，最终以主进程值为准。
+- 渲染端会先订阅主进程更新，再调用 **get** 拉取当前值，可能会触发一次覆盖更新。
 - 若主进程初始值与渲染端一致，通常不会感知到闪动。
-- 渲染端可读取 `isSynced` 判断是否已完成首次同步。
-- React/Solid Hook 的第三个返回值为 `isSynced`。
-- Vue 返回的 Ref 挂载 `isSynced` 字段。
-- Svelte Store 挂载 `isSynced` Store。
+- 渲染端可读取 **isSynced** 判断是否已完成首次同步。
+- React/Solid Hook 的第三个返回值为 **isSynced**。
+- Vue 返回的 Ref 挂载 **isSynced** 字段。
+- Svelte Store 挂载 **isSynced** Store。
 
 ### 错误码
 
-- 只读写入：`SyncStateError` 的 `code` 为 `RENDERER_READONLY`。
-- 写入校验失败：`SyncStateError` 的 `code` 为 `RENDERER_INVALID_VALUE`。
+- 只读写入：**SyncStateError** 的 **code** 为 **RENDERER_READONLY**。
+- 写入校验失败：**SyncStateError** 的 **code** 为 **RENDERER_INVALID_VALUE**。
 
 ### 对象深度监听
 

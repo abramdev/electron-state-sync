@@ -27,11 +27,11 @@ bun add electron-state-sync
 - 🛡️ **Main Process Authority**: All state managed by main process and broadcasted to renderers
 - 🔒 **Write Control**: Support for read-only and writable modes
 - ✅ **Validation**: Main process validates renderer writes with standard error codes
-- 🔄 **First Sync Marker**: Renderer provides `isSynced` to detect first sync completion
+- 🔄 **First Sync Marker**: Renderer provides **isSynced** to detect first sync completion
 - 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
 - 📦 **Lightweight**: Main process and renderer dependencies can be externalized
-- 🔌 **Custom Bridge**: Support custom `SyncStateBridge` implementation
-- 📡 **Consistent Naming**: Unified `baseChannel:name` pattern
+- 🔌 **Custom Bridge**: Support custom **SyncStateBridge** implementation
+- 📡 **Consistent Naming**: Unified **baseChannel:name** pattern
 - 🎯 **Real-time**: Subscribe updates for instant sync
 
 ## Requirements
@@ -182,7 +182,7 @@ exposeSyncState();
 
 ### Common Interface
 
-Browser exposes `window.syncState` with `get` / `set` / `subscribe`:
+Browser exposes **window.syncState** with **get** / **set** / **subscribe**:
 
 ```ts
 const bridge = window.syncState;
@@ -216,7 +216,7 @@ const unsubscribe = bridge.subscribe<number>(
 
 ### Custom Bridge
 
-You can implement `SyncStateBridge` for custom integration:
+You can implement **SyncStateBridge** for custom integration:
 
 ```ts
 import type { SyncStateBridge } from "electron-state-sync/renderer";
@@ -230,7 +230,7 @@ const customBridge: SyncStateBridge = {
 
 ### Vue
 
-`useSyncState` only depends on common interface, can be reused or custom bridge.
+**useSyncState** only depends on common interface, can be reused or custom bridge.
 
 #### Minimal Usage
 
@@ -435,30 +435,30 @@ const [counter, setCounter] = useSyncState(0, {
 });
 ```
 
-### Channel Naming
+### IPC Channel Naming
 
-Channel format: `${baseChannel}:${name}:get|set|subscribe|unsubscribe|update`.
+Channel format: **${baseChannel}:${name}:get|set|subscribe|unsubscribe|update**.
 
 ### Write Permission & Validation
 
-- `allowRendererSet: false` blocks renderer writes and throws error, but subscription still works.
-- `resolveRendererValue` validates or transforms renderer writes, throws error rejects write.
+- **allowRendererSet: false** blocks renderer writes and throws error, but subscription still works.
+- **resolveRendererValue** validates or transforms renderer writes, throws error rejects write.
 - Main process is always the authority source, all changes broadcast to subscribers.
 
 ### Initial Value Sync
 
-- Renderer `initialValue` is only for initial placeholder, final value from main process.
-- Renderer subscribes to main process updates first, then calls `get` to fetch current value, may trigger one overwrite update.
+- Renderer **initialValue** is only for initial placeholder, final value from main process.
+- Renderer subscribes to main process updates first, then calls **get** to fetch current value, may trigger one overwrite update.
 - If main process initial value matches renderer, usually no flash is perceived.
-- Renderer can read `isSynced` to check if first sync completed.
-- React/Solid Hook returns `isSynced` as third value.
-- Vue Ref has `isSynced` property mounted.
-- Svelte Store has `isSynced` store.
+- Renderer can read **isSynced** to check if first sync completed.
+- React/Solid Hook returns **isSynced** as third value.
+- Vue Ref has **isSynced** property mounted.
+- Svelte Store has **isSynced** store.
 
 ### Error Codes
 
-- Readonly write: `SyncStateError` code is `RENDERER_READONLY`.
-- Validation failed: `SyncStateError` code is `RENDERER_INVALID_VALUE`.
+- Readonly write: **SyncStateError** code is **RENDERER_READONLY**.
+- Validation failed: **SyncStateError** code is **RENDERER_INVALID_VALUE**.
 
 ### Object Deep Watch
 
