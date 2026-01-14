@@ -53,8 +53,6 @@ bun add electron-state-sync
 
 #### Quick Setup
 
-**Use Case**: Quick prototyping or simple apps that need basic state sync without validation.
-
 ```ts
 import { app, BrowserWindow } from "electron";
 import { join } from "node:path";
@@ -83,14 +81,7 @@ app.whenReady().then(() => {
 });
 ```
 
-This is perfect for:
-- Prototypes and quick experiments
-- Simple utilities with minimal state
-- Testing and development environments
-
 #### Production Ready
-
-**Use Case**: Production applications requiring validation, custom channels, and controlled write access.
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -130,15 +121,7 @@ app.whenReady().then(() => {
 });
 ```
 
-This is ideal for:
-- Production applications with validation requirements
-- Preventing invalid state updates
-- Custom channel naming for namespacing
-- Security-critical applications with write control
-
 #### Multi-State App
-
-**Use Case**: Applications with multiple states requiring consistent configuration and selective overrides.
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -188,12 +171,6 @@ app.whenReady().then(() => {
   createWindow();
 });
 ```
-
-This is perfect for:
-- Apps with multiple state objects
-- Consistent default configuration across states
-- Selective override of global settings
-- Namespaced channel organization
 
 ### Preload
 

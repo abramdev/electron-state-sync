@@ -53,8 +53,6 @@ bun add electron-state-sync
 
 #### 快速配置
 
-**使用场景**：快速原型或简单应用，需要基础状态同步而无需校验。
-
 ```ts
 import { app, BrowserWindow } from "electron";
 import { join } from "node:path";
@@ -83,14 +81,7 @@ app.whenReady().then(() => {
 });
 ```
 
-适用于：
-- 原型和快速实验
-- 简单工具的状态管理
-- 测试和开发环境
-
 #### 生产级配置
-
-**使用场景**：生产环境应用，需要校验、自定义通道和写入控制。
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -130,15 +121,7 @@ app.whenReady().then(() => {
 });
 ```
 
-适用于：
-- 需要校验的生产应用
-- 防止无效状态更新
-- 自定义通道命名以实现命名空间
-- 需要写入控制的安全关键应用
-
 #### 多状态应用
-
-**使用场景**：具有多个状态的应用，需要一致的配置和选择性覆盖。
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -188,12 +171,6 @@ app.whenReady().then(() => {
   createWindow();
 });
 ```
-
-适用于：
-- 具有多个状态对象的应用
-- 状态间一致的默认配置
-- 选择性覆盖全局设置
-- 命名空间的通道组织
 
 ### Preload
 
