@@ -1,0 +1,89 @@
+{
+  "name": "electron-state-sync",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./main": {
+      "types": "./dist/main.d.ts",
+      "import": "./dist/main.js",
+      "require": "./dist/main.cjs",
+      "source": "./src/main.ts"
+    },
+    "./preload": {
+      "types": "./dist/preload.d.ts",
+      "import": "./dist/preload.js",
+      "require": "./dist/preload.cjs",
+      "source": "./src/preload.ts"
+    },
+    "./renderer": {
+      "types": "./dist/renderer/index.d.ts",
+      "import": "./dist/renderer/index.js",
+      "require": "./dist/renderer/index.cjs",
+      "source": "./src/renderer/index.ts"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs",
+      "source": "./src/renderer/react.ts"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "import": "./dist/vue.js",
+      "require": "./dist/vue.cjs",
+      "source": "./src/renderer/vue.ts"
+    },
+    "./svelte": {
+      "types": "./dist/svelte.d.ts",
+      "import": "./dist/svelte.js",
+      "require": "./dist/svelte.cjs",
+      "source": "./src/renderer/svelte.ts"
+    },
+    "./solid": {
+      "types": "./dist/solid.d.ts",
+      "import": "./dist/solid.js",
+      "require": "./dist/solid.cjs",
+      "source": "./src/renderer/solid.ts"
+    }
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "test": "bun test test",
+    "coverage": "bun test test --coverage",
+    "test:e2e": "bun run build && node ./node_modules/@playwright/test/cli.js test",
+    "build:main": "tsdown -c tsdown.main.config.ts",
+    "build:preload": "tsdown -c tsdown.preload.config.ts",
+    "build:renderer": "tsdown -c tsdown.config.ts",
+    "build": "bun run build:main && bun run build:preload && bun run build:renderer",
+    "lint": "oxlint src",
+    "lint:fix": "oxlint --fix src",
+    "format": "oxfmt src",
+    "format:check": "oxfmt --check src",
+    "check": "bun run lint && bun run format:check"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/bun": "latest",
+    "@types/node": "^25.0.7",
+    "@types/react": "^19.2.8",
+    "electron": "^39.2.7",
+    "lefthook": "^2.0.15",
+    "oxfmt": "^0.24.0",
+    "oxlint": "^1.39.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "solid-js": "^1.9.10",
+    "svelte": "^5.46.3",
+    "tsdown": "^0.20.0-beta.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vue": "^3.5.26"
+  },
+  "peerDependencies": {
+    "electron": "^39.0.0",
+    "react": "^19.0.0",
+    "solid-js": "^1.9.0",
+    "svelte": "^5.0.0",
+    "vue": "^3.5.0"
+  }
+}

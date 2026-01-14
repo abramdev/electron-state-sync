@@ -1,0 +1,18 @@
+{
+  "settings": {
+    "typescript": {
+      "version": "5.9.3"
+    }
+  },
+  "categories": {
+    "suspicious": "warn",
+    "correctness": "error",
+    "perf": "warn",
+    "style": "warn",
+    "pedantic": "warn"
+  },
+  "rules": {
+    "eslint/func-style": "off",
+    "eslint/sort-imports": "off"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "effect-electron-state-e2e",
+  "type": "module",
+  "main": "main.mjs"
+}

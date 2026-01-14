@@ -1,0 +1,39 @@
+# EditorConfig 配置文件
+# https://editorconfig.org
+
+root = true
+
+# 所有文件使用 UTF-8 编码，换行符为 LF
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# JavaScript/TypeScript 文件
+[*.{js,ts,jsx,tsx,mjs,cjs}]
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+# JSON/YAML 文件
+[*.{json,yml,yaml,toml}]
+indent_style = space
+indent_size = 2
+
+# Markdown 文件
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Git 相关文件
+[.git*]
+indent_style = space
+indent_size = 2
+
+# 配置文件
+[*.{rc,config}]
+indent_style = space
+indent_size = 2
