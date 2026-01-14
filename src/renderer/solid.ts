@@ -106,7 +106,7 @@ const createSyncSetter =
   };
 
 // Solid 版本同步状态 Hook
-export const useSyncStateSolid = <StateValue>(
+export const useSyncState = <StateValue>(
   initialValue: StateValue,
   options: UseSyncStateSolidOptions,
 ): UseSyncStateSolidResult<StateValue> => {
@@ -142,3 +142,6 @@ export const useSyncStateSolid = <StateValue>(
 
   return [stateValue, setAndSync, isSynced] as const;
 };
+
+// Backward compatibility alias
+export { useSyncState as useSyncStateSolid };

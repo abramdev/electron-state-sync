@@ -1,7 +1,30 @@
 {
   "name": "electron-state-sync",
+  "version": "1.0.0",
+  "description": "Electron main/renderer process state synchronization library",
   "type": "module",
-  "private": true,
+  "keywords": [
+    "electron",
+    "state",
+    "sync",
+    "ipc",
+    "renderer",
+    "react",
+    "vue",
+    "svelte",
+    "solid",
+    "state-management"
+  ],
+  "author": "abramdev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abramdev/electron-state-sync.git"
+  },
+  "homepage": "https://github.com/abramdev/electron-state-sync#readme",
+  "bugs": {
+    "url": "https://github.com/abramdev/electron-state-sync/issues"
+  },
   "exports": {
     "./main": {
       "types": "./dist/main.d.ts",
@@ -47,6 +70,7 @@
     }
   },
   "scripts": {
+    "prepublishOnly": "bun run build",
     "dev": "bun run src/index.ts",
     "test": "bun test test",
     "coverage": "bun test test --coverage",
@@ -80,10 +104,10 @@
     "vue": "^3.5.26"
   },
   "peerDependencies": {
-    "electron": "^39.0.0",
-    "react": "^19.0.0",
-    "solid-js": "^1.9.0",
-    "svelte": "^5.0.0",
-    "vue": "^3.5.0"
+    "electron": "^18.0.0",
+    "react": "^18.0.0",
+    "solid-js": "^1.0.0",
+    "svelte": "^3.0.0",
+    "vue": "^3.0.0"
   }
 }

@@ -52,7 +52,7 @@ const createRemoteUpdateTracker = <StateValue>(
   };
 };
 
-export const createSyncStateStore = <StateValue>(
+export const useSyncState = <StateValue>(
   initialValue: StateValue,
   options: SyncStateSvelteOptions,
 ): SyncStateStore<StateValue> => {
@@ -95,3 +95,6 @@ export const createSyncStateStore = <StateValue>(
     update,
   };
 };
+
+// Backward compatibility alias
+export { useSyncState as createSyncStateStore };

@@ -1,48 +1,59 @@
 # Electron State Sync
 
-Electron 主/渲染进程状态同步库
+[![npm version](https://badge.fury.io/js/electron-state-sync.svg)](https://www.npmjs.com/package/electron-state-sync) [![npm downloads](https://img.shields.io/npm/dm/electron-state-sync)](https://www.npmjs.com/package/electron-state-sync) [![License](https://img.shields.io/npm/l/electron-state-sync)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/) [![Electron](https://img.shields.io/badge/Electron-18%2B-brightgreen)](https://electronjs.org/)
+
+🌐 [English](./README.md) | [中文](./README.zh-CN.md)
+
+Electron 主/渲染进程状态同步库。
+
+## 安装
+
+```bash
+# npm
+npm install electron-state-sync
+
+# yarn
+yarn add electron-state-sync
+
+# pnpm
+pnpm add electron-state-sync
+
+# bun
+bun add electron-state-sync
+```
 
 ## 特性
 
-- **主进程权威同步**：所有状态以主进程为准并广播更新
-- **渲染端写入控制**：支持只读与可写模式
-- **写入校验与错误码**：主进程校验渲染端写入并返回标准错误码
-- **首次同步标记**：渲染端提供 `isSynced` 判断首次同步完成
-- **多框架支持**：React / Vue / Svelte / Solid
-- **轻量构建**：主进程与渲染端依赖可外部化
-- **自定义桥接**：支持自定义 `SyncStateBridge` 对接
-- **通道命名一致**：统一 `baseChannel:name` 规则
-- **订阅更新**：支持 `subscribe` 实时推送
+- 🛡️ **主进程权威同步**：所有状态以主进程为准并广播更新
+- 🔒 **写入控制**：支持只读与可写模式
+- ✅ **写入校验**：主进程校验渲染端写入并返回标准错误码
+- 🔄 **首次同步标记**：渲染端提供 `isSynced` 判断首次同步完成
+- 🧩 **多框架支持**：React / Vue / Svelte / Solid
+- 📦 **轻量构建**：主进程与渲染端依赖可外部化
+- 🔌 **自定义桥接**：支持自定义 `SyncStateBridge` 对接
+- 📡 **通道命名一致**：统一 `baseChannel:name` 规则
+- 🎯 **实时推送**：支持 `subscribe` 实时更新
 
-## 开发
+## 系统要求
 
-```bash
-bun run dev
-```
+- **Electron**: ≥ 18.0.0（推荐 ≥ 32.0.0）
+- **Node.js**: ≥ 16.9.0
+- **TypeScript**: ≥ 5.0.0（如果使用 TypeScript）
 
-## 构建
+**框架集成**（按需选择）：
 
-```bash
-bun run build
-```
-
-可单独构建：
-
-```bash
-bun run build:main
-bun run build:preload
-bun run build:renderer
-```
-
-## 源码导出
-
-构建产物仍为默认入口，额外提供 `source` 条件用于直接引用 TS 源码（适用于支持该条件的打包器）。
+- **React**: ≥ 18.0.0
+- **Vue**: ≥ 3.0.0
+- **Svelte**: ≥ 3.0.0
+- **SolidJS**: ≥ 1.0.0
 
 ## Electron 同步状态
 
 ### 主进程
 
-#### 最简化配置
+#### 快速配置
+
+**使用场景**：快速原型或简单应用，需要基础状态同步而无需校验。
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -72,7 +83,14 @@ app.whenReady().then(() => {
 });
 ```
 
-#### 完整配置（推荐生产环境）
+适用于：
+- 原型和快速实验
+- 简单工具的状态管理
+- 测试和开发环境
+
+#### 生产级配置
+
+**使用场景**：生产环境应用，需要校验、自定义通道和写入控制。
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -112,7 +130,15 @@ app.whenReady().then(() => {
 });
 ```
 
-#### 使用全局配置（推荐多状态应用）
+适用于：
+- 需要校验的生产应用
+- 防止无效状态更新
+- 自定义通道命名以实现命名空间
+- 需要写入控制的安全关键应用
+
+#### 多状态应用
+
+**使用场景**：具有多个状态的应用，需要一致的配置和选择性覆盖。
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -162,6 +188,12 @@ app.whenReady().then(() => {
   createWindow();
 });
 ```
+
+适用于：
+- 具有多个状态对象的应用
+- 状态间一致的默认配置
+- 选择性覆盖全局设置
+- 命名空间的通道组织
 
 ### Preload
 
@@ -276,9 +308,9 @@ const counter = useSyncState(0, {
 #### 最简化使用
 
 ```ts
-import { useSyncStateReact } from "electron-state-sync/react";
+import { useSyncState } from "electron-state-sync/react";
 
-const [counter, setCounter] = useSyncStateReact(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 ```
@@ -286,7 +318,7 @@ const [counter, setCounter] = useSyncStateReact(0, {
 #### 使用全局配置
 
 ```ts
-import { initSyncState, useSyncStateReact } from "electron-state-sync/react";
+import { initSyncState, useSyncState } from "electron-state-sync/react";
 
 // 在应用初始化时设置全局配置
 initSyncState({
@@ -294,16 +326,16 @@ initSyncState({
 });
 
 // 所有 Hook 自动使用全局配置
-const [counter, setCounter] = useSyncStateReact(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 
-const [user, setUser] = useSyncStateReact({ name: "" }, {
+const [user, setUser] = useSyncState({ name: "" }, {
   name: "user",
 });
 
 // 覆盖全局配置
-const [theme, setTheme] = useSyncStateReact("light", {
+const [theme, setTheme] = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
 });
@@ -312,9 +344,9 @@ const [theme, setTheme] = useSyncStateReact("light", {
 #### 自定义桥接
 
 ```ts
-import { useSyncStateReact } from "electron-state-sync/react";
+import { useSyncState } from "electron-state-sync/react";
 
-const [counter, setCounter] = useSyncStateReact(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
   bridge: customBridge,
 });
@@ -325,9 +357,9 @@ const [counter, setCounter] = useSyncStateReact(0, {
 #### 最简化使用
 
 ```ts
-import { createSyncStateStore } from "electron-state-sync/svelte";
+import { useSyncState } from "electron-state-sync/svelte";
 
-const counter = createSyncStateStore(0, {
+const counter = useSyncState(0, {
   name: "counter",
 });
 ```
@@ -335,7 +367,7 @@ const counter = createSyncStateStore(0, {
 #### 使用全局配置
 
 ```ts
-import { initSyncState, createSyncStateStore } from "electron-state-sync/svelte";
+import { initSyncState, useSyncState } from "electron-state-sync/svelte";
 
 // 在应用初始化时设置全局配置
 initSyncState({
@@ -343,16 +375,16 @@ initSyncState({
 });
 
 // 所有 Store 自动使用全局配置
-const counter = createSyncStateStore(0, {
+const counter = useSyncState(0, {
   name: "counter",
 });
 
-const user = createSyncStateStore({ name: "" }, {
+const user = useSyncState({ name: "" }, {
   name: "user",
 });
 
 // 覆盖全局配置
-const theme = createSyncStateStore("light", {
+const theme = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
 });
@@ -361,9 +393,9 @@ const theme = createSyncStateStore("light", {
 #### 自定义桥接
 
 ```ts
-import { createSyncStateStore } from "electron-state-sync/svelte";
+import { useSyncState } from "electron-state-sync/svelte";
 
-const counter = createSyncStateStore(0, {
+const counter = useSyncState(0, {
   name: "counter",
   bridge: customBridge,
 });
@@ -382,9 +414,9 @@ const counter = createSyncStateStore(0, {
 #### 最简化使用
 
 ```ts
-import { useSyncStateSolid } from "electron-state-sync/solid";
+import { useSyncState } from "electron-state-sync/solid";
 
-const [counter, setCounter] = useSyncStateSolid(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 ```
@@ -392,7 +424,7 @@ const [counter, setCounter] = useSyncStateSolid(0, {
 #### 使用全局配置
 
 ```ts
-import { initSyncState, useSyncStateSolid } from "electron-state-sync/solid";
+import { initSyncState, useSyncState } from "electron-state-sync/solid";
 
 // 在应用初始化时设置全局配置
 initSyncState({
@@ -400,16 +432,16 @@ initSyncState({
 });
 
 // 所有 Hook 自动使用全局配置
-const [counter, setCounter] = useSyncStateSolid(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 
-const [user, setUser] = useSyncStateSolid({ name: "" }, {
+const [user, setUser] = useSyncState({ name: "" }, {
   name: "user",
 });
 
 // 覆盖全局配置
-const [theme, setTheme] = useSyncStateSolid("light", {
+const [theme, setTheme] = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
 });
@@ -418,9 +450,9 @@ const [theme, setTheme] = useSyncStateSolid("light", {
 #### 自定义桥接
 
 ```ts
-import { useSyncStateSolid } from "electron-state-sync/solid";
+import { useSyncState } from "electron-state-sync/solid";
 
-const [counter, setCounter] = useSyncStateSolid(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
   bridge: customBridge,
 });
@@ -453,15 +485,23 @@ const [counter, setCounter] = useSyncStateSolid(0, {
 
 ### 对象深度监听
 
-当值是对象时启用深度监听：
+**仅限 Vue**：深度监听仅在 Vue 集成中支持。
+
+当值是对象时启用深度监听（仅 Vue）：
 
 ```ts
+// Vue 示例
 const profile = useSyncState(
   { name: "Alice" },
   {
-    baseChannel: "state",
     name: "profile",
-    deep: true,
+    deep: true,  // 仅在 Vue 中可用
   }
 );
 ```
+
+**注意**：React、Svelte 和 SolidJS 集成不支持深度监听。在这些框架中，如需监听对象内部变化，请创建新的对象引用以触发更新。
+
+## License
+
+MIT

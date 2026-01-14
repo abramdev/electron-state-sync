@@ -1,48 +1,59 @@
 # Electron State Sync
 
+[![npm version](https://badge.fury.io/js/electron-state-sync.svg)](https://www.npmjs.com/package/electron-state-sync) [![npm downloads](https://img.shields.io/npm/dm/electron-state-sync)](https://www.npmjs.com/package/electron-state-sync) [![License](https://img.shields.io/npm/l/electron-state-sync)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/) [![Electron](https://img.shields.io/badge/Electron-18%2B-brightgreen)](https://electronjs.org/)
+
+🌐 [English](./README.md) | [中文](./README.zh-CN.md)
+
 Electron main/renderer process state synchronization library.
+
+## Installation
+
+```bash
+# npm
+npm install electron-state-sync
+
+# yarn
+yarn add electron-state-sync
+
+# pnpm
+pnpm add electron-state-sync
+
+# bun
+bun add electron-state-sync
+```
 
 ## Features
 
-- **Main Process Authority**: All state is managed by main process and broadcasted to renderers
-- **Renderer Write Control**: Support for read-only and writable modes
-- **Write Validation & Error Codes**: Main process validates renderer writes with standard error codes
-- **First Sync Marker**: Renderer provides `isSynced` to detect first sync completion
-- **Multi-Framework Support**: React / Vue / Svelte / Solid
-- **Lightweight Build**: Main process and renderer dependencies can be externalized
-- **Custom Bridge**: Support custom `SyncStateBridge` implementation
-- **Consistent Channel Naming**: Unified `baseChannel:name` pattern
-- **Subscription Updates**: Real-time push via `subscribe`
+- 🛡️ **Main Process Authority**: All state managed by main process and broadcasted to renderers
+- 🔒 **Write Control**: Support for read-only and writable modes
+- ✅ **Validation**: Main process validates renderer writes with standard error codes
+- 🔄 **First Sync Marker**: Renderer provides `isSynced` to detect first sync completion
+- 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
+- 📦 **Lightweight**: Main process and renderer dependencies can be externalized
+- 🔌 **Custom Bridge**: Support custom `SyncStateBridge` implementation
+- 📡 **Consistent Naming**: Unified `baseChannel:name` pattern
+- 🎯 **Real-time**: Subscribe updates for instant sync
 
-## Development
+## Requirements
 
-```bash
-bun run dev
-```
+- **Electron**: ≥ 18.0.0 (recommended ≥ 32.0.0)
+- **Node.js**: ≥ 16.9.0
+- **TypeScript**: ≥ 5.0.0 (if using TypeScript)
 
-## Build
+**Framework Integration** (choose as needed):
 
-```bash
-bun run build
-```
-
-Build individual parts:
-
-```bash
-bun run build:main
-bun run build:preload
-bun run build:renderer
-```
-
-## Source Export
-
-Build output is the default entry, with additional `source` condition for direct TS source reference (for bundlers that support it).
+- **React**: ≥ 18.0.0
+- **Vue**: ≥ 3.0.0
+- **Svelte**: ≥ 3.0.0
+- **SolidJS**: ≥ 1.0.0
 
 ## Electron Sync State
 
 ### Main Process
 
-#### Minimal Configuration
+#### Quick Setup
+
+**Use Case**: Quick prototyping or simple apps that need basic state sync without validation.
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -72,7 +83,14 @@ app.whenReady().then(() => {
 });
 ```
 
-#### Full Configuration (Recommended for Production)
+This is perfect for:
+- Prototypes and quick experiments
+- Simple utilities with minimal state
+- Testing and development environments
+
+#### Production Ready
+
+**Use Case**: Production applications requiring validation, custom channels, and controlled write access.
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -112,7 +130,15 @@ app.whenReady().then(() => {
 });
 ```
 
-#### Use Global Configuration (Recommended for Multi-State Apps)
+This is ideal for:
+- Production applications with validation requirements
+- Preventing invalid state updates
+- Custom channel naming for namespacing
+- Security-critical applications with write control
+
+#### Multi-State App
+
+**Use Case**: Applications with multiple states requiring consistent configuration and selective overrides.
 
 ```ts
 import { app, BrowserWindow } from "electron";
@@ -162,6 +188,12 @@ app.whenReady().then(() => {
   createWindow();
 });
 ```
+
+This is perfect for:
+- Apps with multiple state objects
+- Consistent default configuration across states
+- Selective override of global settings
+- Namespaced channel organization
 
 ### Preload
 
@@ -276,9 +308,9 @@ const counter = useSyncState(0, {
 #### Minimal Usage
 
 ```ts
-import { useSyncStateReact } from "electron-state-sync/react";
+import { useSyncState } from "electron-state-sync/react";
 
-const [counter, setCounter] = useSyncStateReact(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 ```
@@ -286,7 +318,7 @@ const [counter, setCounter] = useSyncStateReact(0, {
 #### Use Global Configuration
 
 ```ts
-import { initSyncState, useSyncStateReact } from "electron-state-sync/react";
+import { initSyncState, useSyncState } from "electron-state-sync/react";
 
 // Set global config during app initialization
 initSyncState({
@@ -294,16 +326,16 @@ initSyncState({
 });
 
 // All hooks automatically use global config
-const [counter, setCounter] = useSyncStateReact(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 
-const [user, setUser] = useSyncStateReact({ name: "" }, {
+const [user, setUser] = useSyncState({ name: "" }, {
   name: "user",
 });
 
 // Override global config
-const [theme, setTheme] = useSyncStateReact("light", {
+const [theme, setTheme] = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
 });
@@ -312,9 +344,9 @@ const [theme, setTheme] = useSyncStateReact("light", {
 #### Custom Bridge
 
 ```ts
-import { useSyncStateReact } from "electron-state-sync/react";
+import { useSyncState } from "electron-state-sync/react";
 
-const [counter, setCounter] = useSyncStateReact(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
   bridge: customBridge,
 });
@@ -325,9 +357,9 @@ const [counter, setCounter] = useSyncStateReact(0, {
 #### Minimal Usage
 
 ```ts
-import { createSyncStateStore } from "electron-state-sync/svelte";
+import { useSyncState } from "electron-state-sync/svelte";
 
-const counter = createSyncStateStore(0, {
+const counter = useSyncState(0, {
   name: "counter",
 });
 ```
@@ -335,7 +367,7 @@ const counter = createSyncStateStore(0, {
 #### Use Global Configuration
 
 ```ts
-import { initSyncState, createSyncStateStore } from "electron-state-sync/svelte";
+import { initSyncState, useSyncState } from "electron-state-sync/svelte";
 
 // Set global config during app initialization
 initSyncState({
@@ -343,16 +375,16 @@ initSyncState({
 });
 
 // All stores automatically use global config
-const counter = createSyncStateStore(0, {
+const counter = useSyncState(0, {
   name: "counter",
 });
 
-const user = createSyncStateStore({ name: "" }, {
+const user = useSyncState({ name: "" }, {
   name: "user",
 });
 
 // Override global config
-const theme = createSyncStateStore("light", {
+const theme = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
 });
@@ -361,9 +393,9 @@ const theme = createSyncStateStore("light", {
 #### Custom Bridge
 
 ```ts
-import { createSyncStateStore } from "electron-state-sync/svelte";
+import { useSyncState } from "electron-state-sync/svelte";
 
-const counter = createSyncStateStore(0, {
+const counter = useSyncState(0, {
   name: "counter",
   bridge: customBridge,
 });
@@ -382,9 +414,9 @@ const counter = createSyncStateStore(0, {
 #### Minimal Usage
 
 ```ts
-import { useSyncStateSolid } from "electron-state-sync/solid";
+import { useSyncState } from "electron-state-sync/solid";
 
-const [counter, setCounter] = useSyncStateSolid(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 ```
@@ -392,7 +424,7 @@ const [counter, setCounter] = useSyncStateSolid(0, {
 #### Use Global Configuration
 
 ```ts
-import { initSyncState, useSyncStateSolid } from "electron-state-sync/solid";
+import { initSyncState, useSyncState } from "electron-state-sync/solid";
 
 // Set global config during app initialization
 initSyncState({
@@ -400,16 +432,16 @@ initSyncState({
 });
 
 // All hooks automatically use global config
-const [counter, setCounter] = useSyncStateSolid(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
 });
 
-const [user, setUser] = useSyncStateSolid({ name: "" }, {
+const [user, setUser] = useSyncState({ name: "" }, {
   name: "user",
 });
 
 // Override global config
-const [theme, setTheme] = useSyncStateSolid("light", {
+const [theme, setTheme] = useSyncState("light", {
   baseChannel: "settings",
   name: "theme",
 });
@@ -418,9 +450,9 @@ const [theme, setTheme] = useSyncStateSolid("light", {
 #### Custom Bridge
 
 ```ts
-import { useSyncStateSolid } from "electron-state-sync/solid";
+import { useSyncState } from "electron-state-sync/solid";
 
-const [counter, setCounter] = useSyncStateSolid(0, {
+const [counter, setCounter] = useSyncState(0, {
   name: "counter",
   bridge: customBridge,
 });
@@ -453,15 +485,23 @@ Channel format: `${baseChannel}:${name}:get|set|subscribe|unsubscribe|update`.
 
 ### Object Deep Watch
 
-Enable deep watch when value is object:
+**Vue Only**: Deep watch is only supported in Vue integration.
+
+Enable deep watch when value is object (Vue only):
 
 ```ts
+// Vue example
 const profile = useSyncState(
   { name: "Alice" },
   {
-    baseChannel: "state",
     name: "profile",
-    deep: true,
+    deep: true,  // Only available in Vue
   }
 );
 ```
+
+**Note**: React, Svelte, and SolidJS integrations do not support deep watch. For object state changes in those frameworks, create a new object reference to trigger updates.
+
+## License
+
+MIT

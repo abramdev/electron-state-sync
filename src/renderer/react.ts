@@ -23,7 +23,7 @@ const createChannelOptions = (options: UseSyncStateReactOptions): SyncStateChann
   };
 };
 
-export const useSyncStateReact = <StateValue>(
+export const useSyncState = <StateValue>(
   initialValue: StateValue,
   options: UseSyncStateReactOptions,
 ): UseSyncStateReactResult<StateValue> => {
@@ -60,3 +60,6 @@ export const useSyncStateReact = <StateValue>(
 
   return [stateValue, setAndSync, isSynced] as const;
 };
+
+// Backward compatibility alias
+export { useSyncState as useSyncStateReact };
