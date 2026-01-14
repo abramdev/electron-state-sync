@@ -108,6 +108,35 @@ user.set({ name: "Alice" });
 theme.set("dark");
 ```
 
+#### 多窗口同步
+
+状态变更时所有窗口自动接收更新：
+
+```ts
+// main.ts
+import { state } from "electron-state-sync/main";
+
+const theme = state({
+  name: "theme",
+  initialValue: "light",
+});
+
+// 所有使用此状态的窗口都会收到更新
+theme.set("dark"); // 广播到所有订阅的窗口
+```
+
+每个窗口订阅状态变更并自动接收更新：
+
+```ts
+// renderer process
+import { useSyncState } from "electron-state-sync/react";
+
+const [theme] = useSyncState("light", {
+  name: "theme",
+});
+// 当任一窗口调用 theme.set()，所有窗口自动更新
+```
+
 ### Preload
 
 ```ts

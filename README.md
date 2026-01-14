@@ -108,6 +108,35 @@ user.set({ name: "Alice" });
 theme.set("dark");
 ```
 
+#### Multi-Window Sync
+
+All windows automatically receive updates when state changes:
+
+```ts
+// main.ts
+import { state } from "electron-state-sync/main";
+
+const theme = state({
+  name: "theme",
+  initialValue: "light",
+});
+
+// All windows using this state will receive updates
+theme.set("dark"); // Broadcast to all subscribed windows
+```
+
+Each window subscribes to state changes and receives automatic updates:
+
+```ts
+// renderer process
+import { useSyncState } from "electron-state-sync/react";
+
+const [theme] = useSyncState("light", {
+  name: "theme",
+});
+// When any window calls theme.set(), all windows update automatically
+```
+
 ### Preload
 
 ```ts
