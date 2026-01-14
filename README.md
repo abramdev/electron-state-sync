@@ -24,14 +24,11 @@ bun add electron-state-sync
 
 ## Features
 
-- 🛡️ **Main Process Authority**: All state managed by main process and broadcasted to renderers
 - 🔒 **Write Control**: Support for read-only and writable modes
 - ✅ **Validation**: Main process validates renderer writes with standard error codes
-- 🔄 **First Sync Marker**: Renderer provides **isSynced** to detect first sync completion
 - 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
 - 📦 **Lightweight**: Main process and renderer dependencies can be externalized
 - 🔌 **Custom Bridge**: Support custom **SyncStateBridge** implementation
-- 📡 **Consistent Naming**: Unified **baseChannel:name** pattern
 - 🎯 **Real-time**: Subscribe updates for instant sync
 
 ## Requirements
