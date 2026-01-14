@@ -3,10 +3,8 @@ import { contextBridge, ipcRenderer, type IpcRendererEvent } from "electron";
 import { createSyncStateChannels, type SyncStateChannelOptions } from "./channels";
 import type { SyncStateBridge, SyncStateListener } from "./types";
 
-// Create renderer bridge object
 export const createSyncStateBridge = (): SyncStateBridge => {
   const get = async <StateValue>(options: SyncStateChannelOptions): Promise<StateValue> => {
-    // IPC channel names
     const channels = createSyncStateChannels(options);
     return (await ipcRenderer.invoke(channels.getChannel)) as StateValue;
   };
@@ -15,7 +13,6 @@ export const createSyncStateBridge = (): SyncStateBridge => {
     options: SyncStateChannelOptions,
     value: StateValue,
   ): Promise<void> => {
-    // IPC channel names
     const channels = createSyncStateChannels(options);
     await ipcRenderer.invoke(channels.setChannel, value);
   };
@@ -24,7 +21,6 @@ export const createSyncStateBridge = (): SyncStateBridge => {
     options: SyncStateChannelOptions,
     listener: SyncStateListener<StateValue>,
   ): (() => void) => {
-    // IPC channel names
     const channels = createSyncStateChannels(options);
     const handler = (_event: IpcRendererEvent, value: StateValue): void => {
       listener(value);
@@ -46,9 +42,7 @@ export const createSyncStateBridge = (): SyncStateBridge => {
   };
 };
 
-// Expose safe sync API
 export const exposeSyncState = (): void => {
-  // Bridge object in preload
   const bridge = createSyncStateBridge();
   contextBridge.exposeInMainWorld("syncState", bridge);
 };
