@@ -1,0 +1,7 @@
+[test]
+# Only run tests in the test/ directory, exclude e2e
+coverage = false
+coverageDir = "coverage"
+coverageThreshold = { "global": { "branches": 0, "functions": 0, "lines": 0, "statements": 0 } }
+preload = ["./test/setup.ts"]
+root = "./test"
