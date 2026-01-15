@@ -61,4 +61,5 @@ temp
 .claude/
 
 # Development documentation
+CLAUDE.md
 AGENTS.md

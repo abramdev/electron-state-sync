@@ -1,5 +1,5 @@
 // Renderer framework name
-const frameworkName = "solid";
+const frameworkName = "react-query";
 // Current framework identifier
 globalThis.__frameworkName = frameworkName;
 // Framework sync completion flag
@@ -20,9 +20,6 @@ const markFrameworkReady = () => {
 // Update framework sync value
 const updateFrameworkValue = (value) => {
   globalThis.__frameworkValue = value;
-  if (!globalThis.__frameworkReady) {
-    markFrameworkReady();
-  }
   if (mountNode) {
     mountNode.textContent = String(value);
   }
@@ -36,44 +33,54 @@ const assertSyncStateBridge = () => {
 };
 
 try {
-  assertSyncStateBridge();
-  const solidClientPath = require.resolve("solid-js/dist/solid.cjs");
-  const solidClient = require(solidClientPath);
-  const solidModulePath = require.resolve("solid-js");
-  require.cache[solidModulePath] = {
-    exports: solidClient,
-  };
-
-  const { createEffect } = solidClient;
-  const { render } = require("solid-js/web/dist/web.cjs");
-  const { useSyncStateSolid } = require("../dist/solid.cjs");
+  const React = require("react");
+  const { createRoot } = require("react-dom/client");
+  const { QueryClient, QueryClientProvider } = require("@tanstack/react-query");
+  const { useSyncState } = require("../dist/react-query.cjs");
 
   if (!mountNode) {
     throw new Error("mount node not found");
   }
 
-  // Solid render component
+  // Create query client
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        retry: false,
+      },
+    },
+  });
+
+  // React render component
   const App = () => {
-    const [stateValue, _setStateValue, isSynced] = useSyncStateSolid(0, {
+    const { data: count, isSynced, update } = useSyncState(0, {
       baseChannel: "state",
       name: "counter",
     });
 
-    createEffect(() => {
-      updateFrameworkValue(stateValue());
-    });
+    // Expose for testing
+    globalThis.__frameworkState = { update };
 
-    createEffect(() => {
-      if (isSynced()) {
+    // Update test value when count changes
+    React.useEffect(() => {
+      updateFrameworkValue(count);
+      if (isSynced) {
         markFrameworkReady();
       }
-    });
+    }, [count, isSynced]);
 
-    return document.createTextNode("");
+    return null;
   };
 
-  render(() => App(), mountNode);
-  markFrameworkReady();
+  const root = createRoot(mountNode);
+  root.render(
+    React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      React.createElement(App),
+    ),
+  );
 } catch (error) {
   globalThis.__frameworkError = String(error);
 }

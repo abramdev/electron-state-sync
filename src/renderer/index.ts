@@ -1,5 +1,7 @@
 import "./window";
 
+import type { SyncStateBridge } from "../types";
+
 export { resolveSyncStateBridge } from "./bridge";
 
 export { createSyncStateChannels } from "../channels";

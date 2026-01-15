@@ -1,7 +1,7 @@
 const { contextBridge } = require("electron");
 const { join } = require("node:path");
 
-// 根据隔离配置暴露全局变量
+// Expose global variables based on isolation config
 const exposeInMainWorld = (key, value) => {
   if (process.contextIsolated) {
     contextBridge.exposeInMainWorld(key, value);
@@ -11,13 +11,13 @@ const exposeInMainWorld = (key, value) => {
   globalThis[key] = value;
 };
 
-// 记录预加载已执行
+// Record that preload has executed
 exposeInMainWorld("__preloadReady", true);
 
 try {
   const preloadEntry = join(__dirname, "../dist/preload.cjs");
   const { createSyncStateBridge } = require(preloadEntry);
-  // 渲染端桥接实例
+  // Renderer bridge instance
   const bridge = createSyncStateBridge();
 
   exposeInMainWorld("syncState", bridge);

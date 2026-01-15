@@ -1,7 +1,7 @@
-// 测试设置文件 - mock electron 模块
+// Test setup file - mock electron module
 import { mock } from "bun:test";
 
-// Mock electron 模块
+// Mock electron module
 mock.module("electron", () => {
   return {
     ipcMain: {

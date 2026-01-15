@@ -1,23 +1,25 @@
-// 渲染框架名称
+// Renderer framework name
 const frameworkName = "vue";
-// 当前框架标识
+// Current framework identifier
 globalThis.__frameworkName = frameworkName;
-// 框架同步完成标记
+// Framework sync completion flag
 globalThis.__frameworkReady = false;
-// 框架异常信息
+// Framework error info
 globalThis.__frameworkError = undefined;
-// 框架最新值
+// Framework latest value
 globalThis.__frameworkValue = undefined;
+// Framework state reference
+globalThis.__frameworkState = undefined;
 
-// 获取挂载节点
+// Get mount node
 const mountNode = document.getElementById("app");
 
-// 标记框架同步完成
+// Mark framework sync as complete
 const markFrameworkReady = () => {
   globalThis.__frameworkReady = true;
 };
 
-// 更新框架同步值
+// Update framework sync value
 const updateFrameworkValue = (value) => {
   globalThis.__frameworkValue = value;
   if (mountNode) {
@@ -25,10 +27,10 @@ const updateFrameworkValue = (value) => {
   }
 };
 
-// 校验桥接是否已注入
+// Assert if bridge has been injected
 const assertSyncStateBridge = () => {
   if (!globalThis.syncState) {
-    throw new Error("syncState 未注入");
+    throw new Error("syncState not injected");
   }
 };
 
@@ -38,16 +40,20 @@ try {
   const { useSyncState } = require("../dist/vue.cjs");
 
   if (!mountNode) {
-    throw new Error("mount 节点缺失");
+    throw new Error("mount node not found");
   }
 
-  // Vue 应用根组件
+  // Vue app root component
   const app = createApp({
     setup() {
       const state = useSyncState(0, {
         baseChannel: "state",
         name: "counter",
+        deep: true,
       });
+
+      // Expose state reference for testing
+      globalThis.__frameworkState = state;
 
       watch(
         state,

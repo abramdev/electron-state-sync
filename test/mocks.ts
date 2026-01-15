@@ -1,4 +1,4 @@
-// 简单的 electron mock 用于测试
+// Simple electron mock for testing
 export const ipcMain = {
   handle: () => ({} as any),
   on: () => ({} as any),

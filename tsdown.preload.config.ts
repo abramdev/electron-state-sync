@@ -1,6 +1,6 @@
 import { defineConfig } from "tsdown";
 
-// 预加载脚本打包配置
+// Preload script build configuration
 export default defineConfig({
   entry: ["src/preload.ts"],
   format: ["esm", "cjs"],

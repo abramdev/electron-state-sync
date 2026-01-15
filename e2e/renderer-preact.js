@@ -1,5 +1,5 @@
 // Renderer framework name
-const frameworkName = "solid";
+const frameworkName = "preact";
 // Current framework identifier
 globalThis.__frameworkName = frameworkName;
 // Framework sync completion flag
@@ -20,9 +20,6 @@ const markFrameworkReady = () => {
 // Update framework sync value
 const updateFrameworkValue = (value) => {
   globalThis.__frameworkValue = value;
-  if (!globalThis.__frameworkReady) {
-    markFrameworkReady();
-  }
   if (mountNode) {
     mountNode.textContent = String(value);
   }
@@ -37,43 +34,29 @@ const assertSyncStateBridge = () => {
 
 try {
   assertSyncStateBridge();
-  const solidClientPath = require.resolve("solid-js/dist/solid.cjs");
-  const solidClient = require(solidClientPath);
-  const solidModulePath = require.resolve("solid-js");
-  require.cache[solidModulePath] = {
-    exports: solidClient,
-  };
-
-  const { createEffect } = solidClient;
-  const { render } = require("solid-js/web/dist/web.cjs");
-  const { useSyncStateSolid } = require("../dist/solid.cjs");
+  const { h } = require("preact");
+  const { render } = require("preact");
+  const { useSyncState } = require("../dist/preact.cjs");
 
   if (!mountNode) {
     throw new Error("mount node not found");
   }
 
-  // Solid render component
+  // Preact render component
   const App = () => {
-    const [stateValue, _setStateValue, isSynced] = useSyncStateSolid(0, {
+    const [value, _setValue, isSynced] = useSyncState(0, {
       baseChannel: "state",
       name: "counter",
     });
 
-    createEffect(() => {
-      updateFrameworkValue(stateValue());
-    });
+    value !== undefined && updateFrameworkValue(value);
 
-    createEffect(() => {
-      if (isSynced()) {
-        markFrameworkReady();
-      }
-    });
+    isSynced && markFrameworkReady();
 
-    return document.createTextNode("");
+    return h("div", { id: "value" }, String(value));
   };
 
-  render(() => App(), mountNode);
-  markFrameworkReady();
+  render(h(App), mountNode);
 } catch (error) {
   globalThis.__frameworkError = String(error);
 }

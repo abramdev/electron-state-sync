@@ -1,4 +1,4 @@
-import { onBeforeUnmount, onMounted, ref, watch, type Ref } from "vue";
+import { isProxy, onBeforeUnmount, onMounted, ref, toRaw, watch, type Ref } from "vue";
 
 import type { SyncStateChannelOptions } from "../channels";
 import type { SyncStateBridge } from "../types";
@@ -12,7 +12,7 @@ export interface UseSyncStateOptions extends SyncStateChannelOptions {
 
 interface RemoteUpdateTracker<StateValue> {
   applyRemoteValue: (value: StateValue) => void;
-  shouldSkipLocalSync: () => boolean;
+  shouldSkipLocalSync: (currentValue: StateValue) => boolean;
 }
 
 const createChannelOptions = (options: UseSyncStateOptions): SyncStateChannelOptions => {
@@ -23,25 +23,37 @@ const createChannelOptions = (options: UseSyncStateOptions): SyncStateChannelOpt
   };
 };
 
+// Convert Vue Proxy to serializable raw value
+const resolveSyncValue = <StateValue>(value: StateValue): StateValue => {
+  if (value !== null && typeof value === "object" && isProxy(value)) {
+    return toRaw(value) as StateValue;
+  }
+
+  return value;
+};
+
 const createRemoteUpdateTracker = <StateValue>(
   stateRef: Ref<StateValue>,
   isSynced: Ref<boolean>,
 ): RemoteUpdateTracker<StateValue> => {
-  let isRemoteUpdate = false;
+  let isApplyingRemoteValue = false;
+  // Record the last raw value synced from main process
+  let lastRemoteValue: StateValue | undefined = undefined;
 
   const applyRemoteValue = (value: StateValue): void => {
-    isRemoteUpdate = true;
-    stateRef.value = value;
+    // Convert remote synced value to raw object
+    const resolvedValue = resolveSyncValue(value);
+    isApplyingRemoteValue = true;
+    lastRemoteValue = resolvedValue;
+    stateRef.value = resolvedValue;
     isSynced.value = true;
+    isApplyingRemoteValue = false;
   };
 
-  const shouldSkipLocalSync = (): boolean => {
-    if (!isRemoteUpdate) {
-      return false;
-    }
-    isRemoteUpdate = false;
-    return true;
-  };
+  const shouldSkipLocalSync = (currentValue: StateValue): boolean =>
+    // Skip sync if we're currently applying a remote value AND it matches
+    // This prevents infinite loops while allowing all local updates to sync
+    isApplyingRemoteValue && resolveSyncValue(currentValue) === lastRemoteValue;
 
   return {
     applyRemoteValue,
@@ -67,12 +79,15 @@ const createStateWatcher = <StateValue>({
   watch(
     stateRef,
     (nextValue: StateValue) => {
-      if (tracker.shouldSkipLocalSync()) {
+      if (tracker.shouldSkipLocalSync(nextValue)) {
         return;
       }
-      void bridge.set(channelOptions, nextValue);
+      void bridge.set(channelOptions, resolveSyncValue(nextValue));
     },
-    { deep: Boolean(deep) },
+    {
+      deep: Boolean(deep),
+      flush: "sync",
+    },
   );
 
 export interface SyncStateRef<StateValue> extends Ref<StateValue> {

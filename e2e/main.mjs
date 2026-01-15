@@ -4,29 +4,41 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { state } from "../dist/main.js";
 
-// 当前文件路径
+// Current file path
 const currentFile = fileURLToPath(import.meta.url);
-// 当前目录路径
+// Current directory path
 const currentDir = dirname(currentFile);
-// Preload 文件路径
+// Preload file path
 const preloadPath = join(currentDir, "preload.cjs");
-// 启动参数中的渲染框架标识
+// Render framework identifier from startup arguments
 const frameworkArg = process.argv.find((arg) => arg.startsWith("--framework="));
-// 目标框架名称
+// Target framework name
 const frameworkName = frameworkArg ? frameworkArg.split("=")[1] : "base";
-// 渲染端 HTML 文件映射
+// Window count parameter from startup arguments
+const windowsArg = process.argv.find((arg) => arg.startsWith("--windows="));
+// Window count to launch
+const windowCount = windowsArg ? Number(windowsArg.split("=")[1]) : 1;
+// Validated window count
+const resolvedWindowCount =
+  Number.isFinite(windowCount) && windowCount > 0 ? windowCount : 1;
+// Renderer HTML file mapping
 const rendererEntryMap = {
   react: "renderer-react.html",
+  preact: "renderer-preact.html",
   vue: "renderer-vue.html",
   svelte: "renderer-svelte.html",
   solid: "renderer-solid.html",
+  zustand: "renderer-zustand.html",
+  "react-query": "renderer-react-query.html",
+  jotai: "renderer-jotai.html",
+  redux: "renderer-redux.html",
 };
-// 实际渲染端入口文件
+// Actual renderer entry file
 const rendererEntry = rendererEntryMap[frameworkName] ?? "renderer.html";
-// Renderer HTML 路径
+// Renderer HTML path
 const rendererUrl = pathToFileURL(join(currentDir, rendererEntry)).toString();
 
-// 创建应用窗口
+// Create application window
 const createWindow = () =>
   new BrowserWindow({
     webPreferences: {
@@ -37,17 +49,27 @@ const createWindow = () =>
     },
   });
 
-// 启动 Electron 应用
+// Hold window references to prevent GC
+const windows = [];
+
+// Boot Electron application
 const boot = () => {
+  // For zustand, use object structure since the store contains { count, setCount, increment }
+  // Other frameworks use simple number values
+  const initialValue = frameworkName === "zustand" ? { count: 0 } : 0;
+
   state({
     baseChannel: "state",
     name: "counter",
-    initialValue: 0,
+    initialValue,
     allowRendererSet: true,
   });
 
-  const window = createWindow();
-  void window.loadURL(rendererUrl);
+  for (let index = 0; index < resolvedWindowCount; index += 1) {
+    const window = createWindow();
+    windows.push(window);
+    void window.loadURL(rendererUrl);
+  }
 };
 
 app.whenReady().then(boot);

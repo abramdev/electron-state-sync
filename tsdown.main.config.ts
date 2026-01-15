@@ -1,6 +1,6 @@
 import { defineConfig } from "tsdown";
 
-// 主进程打包配置
+// Main process build configuration
 export default defineConfig({
   entry: ["src/main.ts"],
   format: ["esm", "cjs"],

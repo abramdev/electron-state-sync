@@ -1,6 +1,6 @@
-# Git hooks 配置
+# Git hooks configuration
 pre-commit:
-  # 并行运行 lint 和 format 检查
+  # Run lint and format checks in parallel
   parallel: true
   commands:
     lint:
@@ -8,7 +8,7 @@ pre-commit:
     format:
       run: bun run format:check
 
-# Commit 前检查
+# Pre-commit checks
 pre-push:
   parallel: true
   commands:

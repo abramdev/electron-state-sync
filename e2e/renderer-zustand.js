@@ -1,5 +1,5 @@
 // Renderer framework name
-const frameworkName = "react";
+const frameworkName = "zustand";
 // Current framework identifier
 globalThis.__frameworkName = frameworkName;
 // Framework sync completion flag
@@ -33,37 +33,29 @@ const assertSyncStateBridge = () => {
 };
 
 try {
-  assertSyncStateBridge();
-  const React = require("react");
-  const { createRoot } = require("react-dom/client");
-  const { useSyncStateReact } = require("../dist/react.cjs");
+  const { create } = require("zustand");
+  const { syncStateMiddleware } = require("../dist/zustand.cjs");
 
-  if (!mountNode) {
-    throw new Error("mount node not found");
-  }
-
-  // React render component
-  const App = () => {
-    const [value, _setValue, isSynced] = useSyncStateReact(0, {
+  // Create synced Zustand store
+  const store = create(
+    syncStateMiddleware({
       baseChannel: "state",
       name: "counter",
-    });
+    })((set) => ({
+      count: 0,
+      increment: () => set((state) => ({ count: state.count + 1 })),
+      setCount: (value) => set({ count: value }),
+    }))
+  );
 
-    React.useEffect(() => {
-      updateFrameworkValue(value);
-    }, [value]);
+  // Expose for testing - expose the vanilla store directly
+  globalThis.__frameworkState = store;
 
-    React.useEffect(() => {
-      if (isSynced) {
-        markFrameworkReady();
-      }
-    }, [isSynced]);
-
-    return React.createElement("div", { id: "value" }, String(value));
-  };
-
-  const root = createRoot(mountNode);
-  root.render(React.createElement(App));
+  // Subscribe to store changes to update test value
+  const unsubscribe = store.subscribe((state) => {
+    updateFrameworkValue(state.count);
+    markFrameworkReady();
+  });
 } catch (error) {
   globalThis.__frameworkError = String(error);
 }

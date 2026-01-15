@@ -36,6 +36,8 @@ const createRemoteUpdateTracker = <StateValue>(
     isRemoteUpdate = true;
     setStoreValue(value);
     isSynced.set(true);
+    // Reset immediately since Svelte doesn't have a watch that consumes this synchronously
+    isRemoteUpdate = false;
   };
 
   const shouldSkipLocalSync = (): boolean => {
@@ -75,7 +77,6 @@ export const useSyncState = <StateValue>(
 
   const set = (value: StateValue): void => {
     if (tracker?.shouldSkipLocalSync()) {
-      store.set(value);
       return;
     }
 

@@ -49,6 +49,8 @@ const createRemoteUpdateTracker = <StateValue>(
     setState(value);
     // Mark first sync as completed
     setIsSynced(true);
+    // Reset immediately since Solid doesn't have a watch that consumes this synchronously
+    isRemoteUpdate = false;
   };
 
   const shouldSkipLocalSync = (): boolean => {

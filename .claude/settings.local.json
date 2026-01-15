@@ -13,7 +13,18 @@
       "Bash(git branch:*)",
       "Bash(git push:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run check:*)",
+      "Bash(node:*)",
+      "Bash(bun install)",
+      "Bash(bun run build)",
+      "Bash(bun run test)",
+      "Bash(bun run check:*)",
+      "Bash(bun run test:e2e)",
+      "Bash(1 --reporter=line)",
+      "Bash(bun run format:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,11 +2,11 @@ import { describe, expect, test } from "bun:test";
 
 import { createSyncStateChannels } from "../src/channels";
 
-// 测试 IPC 通道生成逻辑
-describe("syncState 通道", () => {
-  // 测试默认 baseChannel
-  test("使用默认 baseChannel", () => {
-    // 通道结果
+// Test IPC channel generation logic
+describe("syncState channels", () => {
+  // Test default baseChannel
+  test("use default baseChannel", () => {
+    // Channel result
     const channels = createSyncStateChannels({ name: "counter" });
 
     expect(channels).toEqual({
@@ -18,9 +18,9 @@ describe("syncState 通道", () => {
     });
   });
 
-  // 测试自定义 baseChannel
-  test("使用自定义 baseChannel", () => {
-    // 通道结果
+  // Test custom baseChannel
+  test("use custom baseChannel", () => {
+    // Channel result
     const channels = createSyncStateChannels({
       baseChannel: "effect",
       name: "profile",

@@ -1,6 +1,6 @@
 {
   "name": "electron-state-sync",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Electron main/renderer process state synchronization library",
   "type": "module",
   "keywords": [
@@ -10,9 +10,16 @@
     "ipc",
     "renderer",
     "react",
+    "preact",
     "vue",
     "svelte",
     "solid",
+    "zustand",
+    "react-query",
+    "tanstack-query",
+    "jotai",
+    "redux",
+    "redux-toolkit",
     "state-management"
   ],
   "author": "abramdev",
@@ -50,6 +57,12 @@
       "require": "./dist/react.cjs",
       "source": "./src/renderer/react.ts"
     },
+    "./preact": {
+      "types": "./dist/preact.d.ts",
+      "import": "./dist/preact.js",
+      "require": "./dist/preact.cjs",
+      "source": "./src/renderer/preact.ts"
+    },
     "./vue": {
       "types": "./dist/vue.d.ts",
       "import": "./dist/vue.js",
@@ -67,6 +80,30 @@
       "import": "./dist/solid.js",
       "require": "./dist/solid.cjs",
       "source": "./src/renderer/solid.ts"
+    },
+    "./zustand": {
+      "types": "./dist/zustand.d.ts",
+      "import": "./dist/zustand.js",
+      "require": "./dist/zustand.cjs",
+      "source": "./src/renderer/zustand.ts"
+    },
+    "./react-query": {
+      "types": "./dist/react-query.d.ts",
+      "import": "./dist/react-query.js",
+      "require": "./dist/react-query.cjs",
+      "source": "./src/renderer/react-query.ts"
+    },
+    "./jotai": {
+      "types": "./dist/jotai.d.ts",
+      "import": "./dist/jotai.js",
+      "require": "./dist/jotai.cjs",
+      "source": "./src/renderer/jotai.ts"
+    },
+    "./redux": {
+      "types": "./dist/redux.d.ts",
+      "import": "./dist/redux.js",
+      "require": "./dist/redux.cjs",
+      "source": "./src/renderer/redux.ts"
     }
   },
   "scripts": {
@@ -94,10 +131,16 @@
     "lefthook": "^2.0.15",
     "oxfmt": "^0.24.0",
     "oxlint": "^1.39.0",
+    "preact": "^10.25.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "solid-js": "^1.9.10",
     "svelte": "^5.46.3",
+    "zustand": "^4.5.0",
+    "@tanstack/react-query": "^5.0.0",
+    "jotai": "^2.0.0",
+    "@reduxjs/toolkit": "^2.0.0",
+    "react-redux": "^9.0.0",
     "tsdown": "^0.20.0-beta.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
@@ -105,9 +148,15 @@
   },
   "peerDependencies": {
     "electron": "^18.0.0",
+    "preact": "^10.0.0",
     "react": "^18.0.0",
     "solid-js": "^1.0.0",
     "svelte": "^3.0.0",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "zustand": "^4.0.0",
+    "@tanstack/react-query": "^5.0.0",
+    "jotai": "^2.0.0",
+    "@reduxjs/toolkit": "^2.0.0",
+    "react-redux": "^9.0.0"
   }
 }

@@ -111,7 +111,7 @@ describe("Error Handling Enhancement Tests", () => {
 
   describe("Backward Compatibility", () => {
     test("should work with old two-parameter constructor", () => {
-      // 旧的调用方式应该仍然工作
+      // Old calling style should still work
       const error = new SyncStateError("RENDERER_READONLY", "old style error");
       expect(error.code).toBe("RENDERER_READONLY");
       expect(error.message).toBe("old style error");

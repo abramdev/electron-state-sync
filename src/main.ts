@@ -56,34 +56,46 @@ const createInvalidValueErrorMessage = (stateName: string, baseChannel: string):
 const INVALID_INITIAL_VALUE_WARNING_MESSAGE =
   "syncState Warning: Initial value contains non-serializable content (such as functions, Symbols, BigInts, etc.), which will prevent the value from being transmitted to renderer process via IPC";
 
-const validateSerializable = (value: unknown): boolean => {
-  const checkType = (val: unknown): boolean => {
-    if (val === null || val === undefined) return true;
-    if (typeof val === "string") return true;
-    if (typeof val === "number") return true;
-    if (typeof val === "boolean") return true;
-    if (typeof val === "function") return false;
-    if (typeof val === "symbol") return false;
-    if (typeof val === "bigint") return false;
-
-    if (Array.isArray(val)) {
-      return val.every(checkType);
-    }
-
-    if (typeof val === "object") {
-      try {
-        JSON.stringify(val);
-        return Object.values(val).every(checkType);
-      } catch {
-        return false;
-      }
-    }
-
+const checkType = (val: unknown): boolean => {
+  if (val === null || val === undefined) {
     return true;
-  };
+  }
+  if (typeof val === "string") {
+    return true;
+  }
+  if (typeof val === "number") {
+    return true;
+  }
+  if (typeof val === "boolean") {
+    return true;
+  }
+  if (typeof val === "function") {
+    return false;
+  }
+  if (typeof val === "symbol") {
+    return false;
+  }
+  if (typeof val === "bigint") {
+    return false;
+  }
 
-  return checkType(value);
+  if (Array.isArray(val)) {
+    return val.every((item) => checkType(item));
+  }
+
+  if (typeof val === "object") {
+    try {
+      JSON.stringify(val);
+      return Object.values(val).every((item) => checkType(item));
+    } catch {
+      return false;
+    }
+  }
+
+  return true;
 };
+
+const validateSerializable = (value: unknown): boolean => checkType(value);
 
 const createSyncStateStore = <StateValue>(initialValue: StateValue): SyncStateStore<StateValue> => {
   let state = initialValue;
@@ -178,14 +190,20 @@ const createInvokeHandlers = <StateValue>(
     try {
       return options.resolveRendererValue(value);
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : createInvalidValueErrorMessage(options.name, options.baseChannel ?? "state");
+      let message = "";
+      let cause: Error | undefined = undefined;
+      if (error instanceof Error) {
+        const { message: errorMessage } = error;
+        message = errorMessage;
+        cause = error;
+      } else {
+        message = createInvalidValueErrorMessage(options.name, options.baseChannel ?? "state");
+      }
+
       throw new SyncStateError("RENDERER_INVALID_VALUE", message, {
         baseChannel: options.baseChannel ?? "state",
+        cause,
         stateName: options.name,
-        cause: error instanceof Error ? error : undefined,
       });
     }
   };
@@ -225,14 +243,13 @@ export const state = <StateValue>(
   options: SyncStateMainOptions<StateValue>,
 ): SyncStateMainHandle<StateValue> => {
   const mergedOptions: SyncStateMainOptions<StateValue> = {
-    baseChannel: globalConfig.baseChannel,
     allowRendererSet: globalConfig.allowRendererSet,
+    baseChannel: globalConfig.baseChannel,
     ...options,
   };
 
   if (!validateSerializable(mergedOptions.initialValue)) {
-    console.warn(INVALID_INITIAL_VALUE_WARNING_MESSAGE);
-    console.warn(`State name: "${mergedOptions.name}"`);
+    console.warn(`${INVALID_INITIAL_VALUE_WARNING_MESSAGE}\n  State name: "${mergedOptions.name}"`);
   }
 
   const channels = createSyncStateChannels(mergedOptions);

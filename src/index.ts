@@ -1,4 +1,4 @@
-// 同步状态库入口
+// Entry point for the sync state library
 export { createSyncStateChannels } from "./channels";
 export type { SyncStateChannelOptions, SyncStateChannels } from "./channels";
 

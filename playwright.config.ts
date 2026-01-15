@@ -1,15 +1,15 @@
 import { defineConfig } from "@playwright/test";
 
-// Playwright 测试配置
+// Playwright test configuration
 export default defineConfig({
-  // E2E 测试目录
+  // E2E test directory
   testDir: "e2e",
-  // 单测超时时间
+  // Test timeout
   timeout: 30_000,
-  // Electron 测试保持串行
+  // Keep Electron tests serial
   fullyParallel: false,
-  // 仅使用单 worker
+  // Use single worker only
   workers: 1,
-  // 输出列表报告
+  // Output list reporter
   reporter: "list",
 });

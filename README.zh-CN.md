@@ -4,7 +4,7 @@
 
 🌐 [English](./README.md) | [中文](./README.zh-CN.md)
 
-一个轻量级的 Electron 状态同步库，实现主进程与渲染端之间的数据无缝共享。支持 React、Vue、Svelte 和 SolidJS，具备自动多窗口同步功能。
+一个轻量级的 Electron 状态同步库，实现主进程与渲染端之间的数据无缝共享。支持 React、Vue、Svelte、SolidJS、Zustand、TanStack Query、Jotai 和 Redux Toolkit，具备自动多窗口同步功能。
 
 ## 安装
 
@@ -16,6 +16,7 @@ npm install electron-state-sync
 
 - 📦 **轻量构建**：主进程 6.3KB，渲染端 1.5-2.2KB
 - 🧩 **多框架支持**：React / Vue / Svelte / Solid
+- 🔄 **状态管理**：Zustand / TanStack Query / Jotai / Redux Toolkit
 - 🔒 **写入控制**：支持只读与可写模式
 - ✅ **写入校验**：主进程校验渲染端写入并返回标准错误码
 - 🔌 **自定义桥接**：支持自定义 **SyncStateBridge** 对接
@@ -78,6 +79,31 @@ const theme = state({
 // 所有使用此状态的窗口都会收到更新
 theme.set("dark"); // 广播到所有订阅的窗口
 ```
+
+#### 停止同步
+
+调用 `dispose()` 停止同步并清理 IPC 处理器：
+
+```ts
+// main.ts
+import { state } from "electron-state-sync/main";
+
+const counter = state({
+  name: "counter",
+  initialValue: 0,
+});
+
+counter.set(10);  // 同步并广播
+counter.get();    // 返回 10
+
+// 停止同步 - 移除 IPC 处理器并清除订阅者
+counter.dispose();
+```
+
+调用 `dispose()` 后：
+- `get`/`set`/`subscribe`/`unsubscribe` 的 IPC 处理器被移除
+- 所有订阅者被清除
+- 渲染端调用会静默失败
 
 每个窗口订阅状态变更并自动接收更新：
 
@@ -162,6 +188,7 @@ import { useSyncState } from "electron-state-sync/vue";
 const counter = useSyncState(0, {
   name: "counter",
 });
+// counter.isSynced - Ref<boolean>
 ```
 
 #### 使用全局配置
@@ -209,9 +236,13 @@ const counter = useSyncState(0, {
 ```ts
 import { useSyncState } from "electron-state-sync/react";
 
-const [counter, setCounter] = useSyncState(0, {
-  name: "counter",
-});
+function App() {
+  const [counter, setCounter, isSynced] = useSyncState(0, {
+    name: "counter",
+  });
+
+  return <div onClick={() => setCounter(5)}>{counter}</div>;
+}
 ```
 
 #### 使用全局配置
@@ -261,6 +292,7 @@ import { useSyncState } from "electron-state-sync/svelte";
 const counter = useSyncState(0, {
   name: "counter",
 });
+// counter.isSynced - Readable<boolean>
 ```
 
 #### 使用全局配置
@@ -357,6 +389,270 @@ const [counter, setCounter] = useSyncState(0, {
 });
 ```
 
+### Zustand
+
+#### 最简化使用
+
+```ts
+import { create } from "zustand";
+import { syncStateMiddleware } from "electron-state-sync/zustand";
+
+const useStore = create(
+  syncStateMiddleware({ name: "counter" })((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+  }))
+);
+
+// 在组件中使用
+const count = useStore((state) => state.count);
+```
+
+#### 使用全局配置
+
+```ts
+import { initSyncState } from "electron-state-sync/zustand";
+import { create } from "zustand";
+import { syncStateMiddleware } from "electron-state-sync/zustand";
+
+initSyncState({
+  baseChannel: "myapp",
+});
+
+const useStore = create(
+  syncStateMiddleware({ name: "counter" })((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+  }))
+);
+```
+
+#### 自定义桥接
+
+```ts
+import { create } from "zustand";
+import { syncStateMiddleware } from "electron-state-sync/zustand";
+
+const useStore = create(
+  syncStateMiddleware({
+    name: "counter",
+    bridge: customBridge,
+  })((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+  }))
+);
+```
+
+### TanStack Query (React Query)
+
+#### 最简化使用
+
+```ts
+import { useSyncState } from "electron-state-sync/react-query";
+
+function App() {
+  const { data: count, isSynced, update } = useSyncState(0, {
+    name: "counter",
+  });
+
+  return <div onClick={() => update(5)}>{count}</div>;
+}
+```
+
+#### 使用全局配置
+
+```ts
+import { initSyncState, useSyncState } from "electron-state-sync/react-query";
+
+initSyncState({
+  baseChannel: "myapp",
+});
+
+function App() {
+  const { data: count, isSynced, update } = useSyncState(0, {
+    name: "counter",
+  });
+
+  return <div onClick={() => update(5)}>{count}</div>;
+}
+```
+
+#### 自定义桥接
+
+```ts
+import { useSyncState } from "electron-state-sync/react-query";
+
+function App() {
+  const { data: count, isSynced, update } = useSyncState(0, {
+    name: "counter",
+    bridge: customBridge,
+  });
+
+  return <div onClick={() => update(5)}>{count}</div>;
+}
+```
+
+### Jotai
+
+#### 最简化使用
+
+```ts
+import { atom, useAtom } from "jotai";
+import { syncStateAtom } from "electron-state-sync/jotai";
+
+const countAtom = syncStateAtom(0, { name: "counter" });
+
+function App() {
+  const [count, setCount] = useAtom(countAtom);
+  return <div onClick={() => setCount(5)}>{count}</div>;
+}
+```
+
+#### 使用全局配置
+
+```ts
+import { initSyncState } from "electron-state-sync/jotai";
+import { atom, useAtom } from "jotai";
+import { syncStateAtom } from "electron-state-sync/jotai";
+
+initSyncState({
+  baseChannel: "myapp",
+});
+
+const countAtom = syncStateAtom(0, { name: "counter" });
+
+function App() {
+  const [count, setCount] = useAtom(countAtom);
+  return <div onClick={() => setCount(5)}>{count}</div>;
+}
+```
+
+#### 自定义桥接
+
+```ts
+import { atom, useAtom } from "jotai";
+import { syncStateAtom } from "electron-state-sync/jotai";
+
+const countAtom = syncStateAtom(0, {
+  name: "counter",
+  bridge: customBridge,
+});
+
+function App() {
+  const [count, setCount] = useAtom(countAtom);
+  return <div onClick={() => setCount(5)}>{count}</div>;
+}
+```
+
+### Redux Toolkit
+
+#### 最简化使用
+
+```ts
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { syncStateMiddleware } from "electron-state-sync/redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    setValue: (state, action) => {
+      state.value = action.payload;
+    },
+  },
+});
+
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      syncStateMiddleware({
+        name: "counter",
+        selector: (state) => state.counter.value,
+        actionType: "counter/setValue",
+      })
+    ),
+});
+
+function App() {
+  const count = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
+  return <div onClick={() => dispatch(counterSlice.actions.setValue(5))}>{count}</div>;
+}
+```
+
+#### 使用全局配置
+
+```ts
+import { initSyncState } from "electron-state-sync/redux";
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { syncStateMiddleware } from "electron-state-sync/redux";
+
+initSyncState({
+  baseChannel: "myapp",
+});
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    setValue: (state, action) => {
+      state.value = action.payload;
+    },
+  },
+});
+
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      syncStateMiddleware({
+        name: "counter",
+        selector: (state) => state.counter.value,
+        actionType: "counter/setValue",
+      })
+    ),
+});
+```
+
+#### 自定义桥接
+
+```ts
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { syncStateMiddleware } from "electron-state-sync/redux";
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    setValue: (state, action) => {
+      state.value = action.payload;
+    },
+  },
+});
+
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      syncStateMiddleware({
+        name: "counter",
+        selector: (state) => state.counter.value,
+        actionType: "counter/setValue",
+        bridge: customBridge,
+      })
+    ),
+});
+```
+
 ### IPC 通道命名
 
 通道格式为 **${baseChannel}:${name}:get|set|subscribe|unsubscribe|update**。
@@ -399,7 +695,27 @@ const profile = useSyncState(
 );
 ```
 
-**注意**：React、Svelte 和 SolidJS 集成不支持深度监听。在这些框架中，如需监听对象内部变化，请创建新的对象引用以触发更新。
+**注意**：
+- Vue 集成会在同步前将响应式 Proxy 转为原始值，确保 IPC 可序列化。
+- React、Svelte 和 SolidJS 集成不支持深度监听。在这些框架中，如需监听对象内部变化，请创建新的对象引用以触发更新。
+
+## 包体积
+
+各框架包体积（ESM / CJS）：
+
+| 包 | ESM | CJS | gzip |
+|---------|-----|-----|------|
+| Main | 6.44 kB | 6.51 kB | 1.95 kB |
+| Preload | 1.49 kB | 1.54 kB | 0.49 kB |
+| Zustand | 5.88 kB | 6.06 kB | 1.43 kB |
+| Redux | 4.37 kB | 4.54 kB | 1.34 kB |
+| React Query | 3.34 kB | 3.53 kB | 1.13 kB |
+| Jotai | 3.32 kB | 3.44 kB | 1.14 kB |
+| Vue | 2.24 kB | 2.25 kB | 0.81 kB |
+| Solid | 2.21 kB | 2.24 kB | 0.77 kB |
+| Svelte | 1.77 kB | 1.82 kB | 0.64 kB |
+| Preact | 1.43 kB | 1.51 kB | 0.56 kB |
+| React | 1.42 kB | 1.45 kB | 0.55 kB |
 
 ## 系统要求
 
@@ -413,6 +729,14 @@ const profile = useSyncState(
 - **Vue**: ≥ 3.0.0
 - **Svelte**: ≥ 3.0.0
 - **SolidJS**: ≥ 1.0.0
+
+**状态管理集成**（按需选择）：
+
+- **Zustand**: ≥ 4.0.0
+- **TanStack Query**: ≥ 5.0.0
+- **Jotai**: ≥ 2.0.0
+- **Redux Toolkit**: ≥ 2.0.0
+- **React Redux**: ≥ 9.0.0（用于 Redux Toolkit 集成）
 
 ## License
 
