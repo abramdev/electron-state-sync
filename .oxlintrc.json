@@ -1,4 +1,8 @@
 {
+  "ignorePatterns": [
+    "*.config.*",
+    ".*rc.*"
+  ],
   "settings": {
     "typescript": {
       "version": "5.9.3"
