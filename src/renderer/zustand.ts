@@ -86,7 +86,7 @@ export const syncStateMiddleware =
     const applyRemoteValue = (value: State): void => {
       isApplyingRemoteValue = true;
       // If value is a primitive or the store state has nested structure,
-      // merge it appropriately to preserve actions
+      // Merge it appropriately to preserve actions
       const currentState = get();
       if (typeof value === "object" && value !== null && !Array.isArray(value)) {
         // Value is an object, merge it
