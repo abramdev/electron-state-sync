@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/abramdev/electron-state-sync/compare/v1.0.0...v1.1.0) (2026-01-18)
+
+
+### Bug Fixes
+
+* correct semantic-release npm configuration for OIDC ([3c02e0e](https://github.com/abramdev/electron-state-sync/commit/3c02e0e75e2c45565f00437470c935bdd1642af5))
+
+
+### Features
+
+* configure OIDC trusted publishing for npm ([50ac853](https://github.com/abramdev/electron-state-sync/commit/50ac853de7a7bd23c4f5538caed54de72ba22aa2))
+
 # 1.0.0 (2026-01-16)
 
 
