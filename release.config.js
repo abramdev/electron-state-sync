@@ -4,7 +4,14 @@ export default {
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
-    "@semantic-release/npm",
+    [
+      "@semantic-release/npm",
+      {
+        npmPublish: {
+          provenance: true,
+        },
+      },
+    ],
     [
       "@semantic-release/git",
       {
@@ -12,5 +19,6 @@ export default {
         message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
       },
     ],
+    "@semantic-release/github",
   ],
 };
