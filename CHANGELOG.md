@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/abramdev/electron-state-sync/compare/v1.1.0...v1.1.1) (2026-01-18)
+
+
+### Bug Fixes
+
+* add Preact to supported frameworks in README ([6da7539](https://github.com/abramdev/electron-state-sync/commit/6da7539c25503415f0e4ada2cc5fe97a5b684f73))
+* capitalize comment sentences for eslint compliance ([cdd662e](https://github.com/abramdev/electron-state-sync/commit/cdd662e095ad679b49f012a59416fe91f7ec0401))
+
 # [1.1.0](https://github.com/abramdev/electron-state-sync/compare/v1.0.0...v1.1.0) (2026-01-18)
 
 
