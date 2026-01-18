@@ -15,7 +15,7 @@ npm install electron-state-sync
 ## Features
 
 - 📦 **Lightweight**: Main 6.3KB, renderer 1.5-2.2KB
-- 🧩 **Multi-Framework**: React / Vue / Svelte / Solid
+- 🧩 **Multi-Framework**: React / Vue / Svelte / Solid / Preact
 - 🔄 **State Management**: Zustand / TanStack Query / Jotai / Redux Toolkit
 - 🔒 **Write Control**: Support for read-only and writable modes
 - ✅ **Validation**: Main process validates renderer writes with standard error codes
